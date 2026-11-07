@@ -18,5 +18,6 @@ public class ContactPublicDetailsDTO
 
     public string CategoryName { get; set; } = "";
     public string? SubcategoryName { get; set; } = null;
+    public string? CustomSubcategoryName { get; set; } = null;
 
 }

@@ -22,26 +22,27 @@ public class User
     public string PasswordHash { get; set; } = "";
 
     [Required]
-    public string Role { get; set; } = Roles.UserRole; // Default role is "User"
+    public string Role { get; set; } = RoleNames.UserRole; // Default role is "User"
 
     public string? PhoneNumber { get; set; }
 
     public DateOnly? Birthday { get; set; }
 
+    [Required]
     public Guid CategoryId { get; set; }
     [ForeignKey(nameof(CategoryId))]
-    public string CategoryName { get; set; } = Categories.Private;  // Default category is "Private"
+    public required Category Category { get; set; } 
 
     public Guid? SubcategoryId { get; set; }
     [ForeignKey(nameof(SubcategoryId))]
-    public string? SubcategoryName { get; set; }
+    public Subcategory? Subcategory { get; set; }
 
     public Guid? CustomSubcategoryId { get; set; }
     [ForeignKey(nameof(CustomSubcategoryId))]
-    public string? CustomSubcategoryName { get; set; }
+    public CustomSubcategory? CustomSubcategory { get; set; }
 
 
+    public User() { Id = Guid.NewGuid(); }
 
 
-    
 }

@@ -16,12 +16,13 @@ public class ContactDetailsDTO
 
     public string Email { get; set; } = "";
 
-    public string PhoneNumber { get; set; } = "";
+    public string? PhoneNumber { get; set; } = "";
 
     public string CategoryName { get; set; } = "";
     public string? SubcategoryName { get; set; } = null;
+    public string? CustomSubcategoryName { get; set; } = null;
 
-    public DateOnly Birthday { get; set; }
+    public string? Birthday { get; set; }
 
     public string PasswordMock { get; set; } = ""; // Placeholder for password, should not be exposed in real applications
 
