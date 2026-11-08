@@ -23,67 +23,75 @@ public class MockUserService : IUserService
     private static readonly Guid CustomSubcategoryNeighbor = Guid.Parse("55555555-5555-5555-5555-555555555551");
     private static readonly Guid CustomSubcategoryEmployee = Guid.Parse("55555555-5555-5555-5555-555555555552");
 
-    private List<Subcategory> subcategories = new()
-    {
-        new Subcategory
-        {
-            Id = SubcategoryBoss,
-            Name = SubcategoryNames.Boss
-        },
-        new Subcategory
-        {
-            Id = SubcategoryClient,
-            Name = SubcategoryNames.Client
-        },
-        new Subcategory
-        {
-            Id = SubcategoryCoworker,
-            Name = SubcategoryNames.Coworker
-        },
-        new Subcategory
-        {
-            Id = SubcategoryHR,
-            Name = SubcategoryNames.HR
-        }
-    };
 
-    private List<Category> categories = new()
-    {
-        new Category
-        {
-            Id = CategoryPrivate,
-            Name = CategoryNames.Private,
-            SubcategoryMode = SubcategoryMode.None
-        },
-        new Category
-        {
-            Id = CategoryBusiness,
-            Name = CategoryNames.Business,
-            SubcategoryMode = SubcategoryMode.Dictionary
-        },
-        new Category
-        {
-            Id = CategoryOther,
-            Name = CategoryNames.Other,
-            SubcategoryMode = SubcategoryMode.Custom
-        }
-    };
+    private readonly List<User> users;
+    private readonly List<Category> categories;
+    private readonly List<Subcategory> subcategories;
+    private readonly List<CustomSubcategory> customsubcategories;
 
-    private List<CustomSubcategory> customsubcategories = new()
+    public MockUserService()
     {
-        new CustomSubcategory
+        subcategories = new()
         {
-            Name = "sąsiad",
-        },
-        new CustomSubcategory
-        {
-            Name = "przysły pracownik"
-        }
-    };
+            new Subcategory
+            {
+                Id = SubcategoryBoss,
+                Name = SubcategoryNames.Boss
+            },
+            new Subcategory
+            {
+                Id = SubcategoryClient,
+                Name = SubcategoryNames.Client
+            },
+            new Subcategory
+            {
+                Id = SubcategoryCoworker,
+                Name = SubcategoryNames.Coworker
+            },
+            new Subcategory
+            {
+                Id = SubcategoryHR,
+                Name = SubcategoryNames.HR
+            }
+        };
 
-    private List<User> users = new()
-    {
-        new User
+        categories = new()
+        {
+            new Category
+            {
+                Id = CategoryPrivate,
+                Name = CategoryNames.Private,
+                SubcategoryMode = SubcategoryMode.None
+            },
+            new Category
+            {
+                Id = CategoryBusiness,
+                Name = CategoryNames.Business,
+                SubcategoryMode = SubcategoryMode.Dictionary
+            },
+            new Category
+            {
+                Id = CategoryOther,
+                Name = CategoryNames.Other,
+                SubcategoryMode = SubcategoryMode.Custom
+            }
+        };
+
+        customsubcategories = new()
+        {
+            new CustomSubcategory
+            {
+                Name = "sąsiad",
+            },
+            new CustomSubcategory
+            {
+                Name = "przysły pracownik"
+            }
+        };
+
+        users = new()
+        {
+            new User
             {
                 FirstName = "Adam",
                 LastName = "Kowalski",
@@ -95,7 +103,7 @@ public class MockUserService : IUserService
                 CategoryId = CategoryPrivate,
                 SubcategoryId = null,
                 CustomSubcategoryId = null,
-                Category = null!,
+                Category = categories.FirstOrDefault(c => c.Id == CategoryPrivate)!,
                 Subcategory = null!,
                 CustomSubcategory = null!
             },
@@ -111,8 +119,8 @@ public class MockUserService : IUserService
                 CategoryId = CategoryBusiness,
                 SubcategoryId = SubcategoryCoworker,
                 CustomSubcategoryId = null,
-                Category = null!,
-                Subcategory = null!,
+                Category = categories.FirstOrDefault(c => c.Id == CategoryBusiness)!,
+                Subcategory = subcategories.FirstOrDefault(s => s.Id == SubcategoryCoworker)!,
                 CustomSubcategory = null!
             },
             new User
@@ -127,9 +135,9 @@ public class MockUserService : IUserService
                 CategoryId = CategoryOther,
                 SubcategoryId = null,
                 CustomSubcategoryId = CustomSubcategoryNeighbor,
-                Category = null!,
+                Category = categories.FirstOrDefault(c => c.Id == CategoryOther)!,
                 Subcategory = null!,
-                CustomSubcategory = null!
+                CustomSubcategory = customsubcategories.FirstOrDefault(c => c.Id == CustomSubcategoryNeighbor)!
             },
             new User
             {
@@ -143,12 +151,12 @@ public class MockUserService : IUserService
                 CategoryId = CategoryOther,
                 SubcategoryId = null,
                 CustomSubcategoryId = CustomSubcategoryEmployee,
-                Category = null!,
+                Category = categories.FirstOrDefault(c => c.Id == CategoryOther)!,
                 Subcategory = null!,
-                CustomSubcategory = null!
+                CustomSubcategory = customsubcategories.FirstOrDefault(c => c.Id == CustomSubcategoryEmployee)!
             }
-
-    };
+        };
+    }
 
     public async Task<bool> CreateUserAsync(User user)
     {

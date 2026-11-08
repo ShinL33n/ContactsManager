@@ -9,6 +9,7 @@ namespace ContactsManager.Api.Controllers;
 
 [ApiController]
 //[Authorize]
+[Route("api/[controller]")]
 public class ContactsController : Controller
 {
     private readonly IUserService _userService;
@@ -26,10 +27,8 @@ public class ContactsController : Controller
     {
         IEnumerable<User> users = await _userService.GetAllUsersAsync();
 
-        // if(not anonymus) return ContactPublicDetailsDto
-
         List<ContactDetailsDTO> contacts = new();
-
+        // if(not anonymus) return ContactPublicDetailsDto
         foreach (var user in users)
         {
             contacts.Add(new ContactDetailsDTO
@@ -45,6 +44,7 @@ public class ContactsController : Controller
                 CustomSubcategoryName = user.CustomSubcategory?.Name
             });
         }
+        
 
         _response.Result = contacts;
         _response.StatusCode = HttpStatusCode.OK;
