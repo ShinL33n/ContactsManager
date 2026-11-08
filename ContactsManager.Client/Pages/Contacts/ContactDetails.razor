@@ -1,7 +1,8 @@
-﻿@page "/contacts/{ContactId:int}"
+﻿@page "/contact/{Id:guid}"
 
 <h3>ContactDetails</h3>
 
 @code {
-
+	[Parameter]
+	public Guid Id { get; set; }
 }

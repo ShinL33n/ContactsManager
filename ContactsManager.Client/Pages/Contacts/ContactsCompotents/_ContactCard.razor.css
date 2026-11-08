@@ -1,0 +1,53 @@
+.contact-card {
+    border: 1px solid #d5dfd0;
+    border-left: 5px solid var(--accent-dark);
+}
+
+.avatar {
+    width: 52px;
+    height: 52px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--accent-dark);
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.category-badge {
+    background: var(--accent-light);
+    color: #14200f;
+    font-weight: 600;
+}
+
+.contact-card dt {
+    color: #4f6644;
+    font-weight: 600;
+}
+
+.contact-card dd {
+    margin-bottom: .5rem;
+}
+
+    .contact-card dd:last-child {
+        margin-bottom: 0;
+    }
+
+.btn-outline-accent {
+    color: #4f6644;
+    border-color: var(--accent-dark);
+}
+
+    .btn-outline-accent:hover, .btn-outline-accent:focus-visible {
+        background: var(--accent-light);
+        border-color: var(--accent-dark);
+        color: #14200f;
+    }
+
+.inv-link {
+    text-decoration: none;
+    color: inherit;
+}

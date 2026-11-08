@@ -1,7 +1,6 @@
 ﻿using ContactsManager.Client.Services.IServices;
 using ContactsManager.Shared.DTOs;
 using System.Net.Http.Json;
-using static System.Net.WebRequestMethods;
 
 namespace ContactsManager.Client.Services;
 
@@ -15,7 +14,15 @@ public class ContactService : IContactService
 
     public async Task<List<ContactDetailsDTO>> GetAllContactsDetailsAsync()
     {
-         return await _httpClient.GetFromJsonAsync<List<ContactDetailsDTO>>("api/contacts") ?? [];
+        try
+        {
+            return await _httpClient.GetFromJsonAsync<List<ContactDetailsDTO>>("api/contacts") ?? [];
+        }
+        catch (Exception)
+        {
+            // log error message
+            return [];
+        }
     }
 
     public async Task<List<ContactPublicDetailsDTO>> GetAllContactsPublicDetailsAsync()

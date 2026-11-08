@@ -81,11 +81,13 @@ public class MockUserService : IUserService
         {
             new CustomSubcategory
             {
+                Id = CustomSubcategoryNeighbor,
                 Name = "sąsiad",
             },
             new CustomSubcategory
             {
-                Name = "przysły pracownik"
+                Id = CustomSubcategoryEmployee,
+                Name = "przyszły pracownik"
             }
         };
 

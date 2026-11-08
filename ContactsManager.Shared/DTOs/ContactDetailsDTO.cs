@@ -24,6 +24,5 @@ public class ContactDetailsDTO
 
     public string? Birthday { get; set; }
 
-    public string PasswordMock { get; set; } = ""; // Placeholder for password, should not be exposed in real applications
 
 }

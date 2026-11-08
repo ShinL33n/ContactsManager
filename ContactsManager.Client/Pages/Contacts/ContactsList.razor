@@ -1,11 +1,38 @@
 ﻿@page "/"
+@using ContactsManager.Client.Services.IServices
+@using ContactsManager.Shared.DTOs
+@inject IContactService ContactService
 
 <PageTitle>Contacts List</PageTitle>
 
-<h1>Lista kontaktów...</h1>
+<h1 class="fw-bolder pb-2">Lista kontaktów:</h1>
 
+
+@if(isLoading)
+{
+	<div class="spinner"></div>
+	<p>Ładowanie...</p>
+}
+else if(contacts == null || contacts.Count == 0)
+{
+	<div class="no-contacts">Brak kontaktów</div>
+}
+else
+{
+	@foreach (var contact in contacts)
+	{
+		<_ContactCard Contact="contact" />
+	}
+}
 
 @code {
+	private List<ContactDetailsDTO> contacts = new();
+	private bool isLoading = true;
 
+	protected override async Task OnInitializedAsync()
+	{
+		contacts = await ContactService.GetAllContactsDetailsAsync();
+		isLoading = false;
+	}
 }
 
