@@ -16,6 +16,10 @@ public class ContactPublicDetailsDTO
 
     public string Email { get; set; } = "";
 
+    public string? PhoneNumber { get; set; } = "";
+
+    public uint? Age { get; set; }
+
     public string CategoryName { get; set; } = "";
     public string? SubcategoryName { get; set; } = null;
     public string? CustomSubcategoryName { get; set; } = null;

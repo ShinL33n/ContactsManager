@@ -25,8 +25,11 @@ public class User
     public string Role { get; set; } = RoleNames.UserRole; // Default role is "User"
 
     public string? PhoneNumber { get; set; }
-
     public DateOnly? Birthday { get; set; }
+    public uint? Age { get; set; }
+    public string? Address { get; set; }
+    public string? JobTitle { get; set; }
+    public string? Notes { get; set; }
 
     [Required]
     public Guid CategoryId { get; set; }
@@ -40,6 +43,10 @@ public class User
     public Guid? CustomSubcategoryId { get; set; }
     [ForeignKey(nameof(CustomSubcategoryId))]
     public CustomSubcategory? CustomSubcategory { get; set; }
+    
+    public Guid? EducationId { get; set; }
+    [ForeignKey(nameof(EducationId))]
+    public Education? Education { get; set; }
 
 
     public User() { Id = Guid.NewGuid(); }

@@ -23,11 +23,21 @@ public class MockUserService : IUserService
     private static readonly Guid CustomSubcategoryNeighbor = Guid.Parse("55555555-5555-5555-5555-555555555551");
     private static readonly Guid CustomSubcategoryEmployee = Guid.Parse("55555555-5555-5555-5555-555555555552");
 
+    // Education
+    private static readonly Guid EducationPrimary = Guid.Parse("66666666-6666-6666-6666-666666666661");
+    private static readonly Guid EducationVocational = Guid.Parse("66666666-6666-6666-6666-666666666662");
+    private static readonly Guid EducationSecondary = Guid.Parse("66666666-6666-6666-6666-666666666663");
+    private static readonly Guid EducationBachelor = Guid.Parse("66666666-6666-6666-6666-666666666664");
+    private static readonly Guid EducationEngineer = Guid.Parse("66666666-6666-6666-6666-666666666665");
+    private static readonly Guid EducationMaster = Guid.Parse("66666666-6666-6666-6666-666666666666");
+    private static readonly Guid EducationDoctorate = Guid.Parse("66666666-6666-6666-6666-666666666667");
+
 
     private readonly List<User> users;
     private readonly List<Category> categories;
     private readonly List<Subcategory> subcategories;
     private readonly List<CustomSubcategory> customsubcategories;
+    private readonly List<Education> educations;
 
     public MockUserService()
     {
@@ -91,6 +101,45 @@ public class MockUserService : IUserService
             }
         };
 
+        educations = new()
+        {
+            new Education
+            {
+                Id = EducationPrimary,
+                Name = EducationNames.PrimaryEducation
+            },
+            new Education
+            {
+                Id = EducationVocational,
+                Name = EducationNames.VocationalEducation
+            },
+            new Education
+            {
+                Id = EducationSecondary,
+                Name = EducationNames.SecondaryEducation
+            },
+            new Education
+            {
+                Id = EducationBachelor,
+                Name = EducationNames.BachelorEducation
+            },
+            new Education
+            {
+                Id = EducationEngineer,
+                Name = EducationNames.EngineerEducation
+            },
+            new Education
+            {
+                Id = EducationMaster,
+                Name = EducationNames.MasterEducation
+            },
+            new Education
+            {
+                Id = EducationDoctorate,
+                Name = EducationNames.DoctorateEducation
+            }
+        };
+
         users = new()
         {
             new User
@@ -102,28 +151,18 @@ public class MockUserService : IUserService
                 Role = RoleNames.UserRole,
                 PhoneNumber = "123456789",
                 Birthday = new DateOnly(1990, 1, 12),
+                Age = 36,
+                Address = "ul. Przykładowa 1, 00-001 Warszawa",
+                JobTitle = "Inżynier oprogramowania",
+                Notes = "Software Engineer with 10 years of experience.",
                 CategoryId = CategoryPrivate,
                 SubcategoryId = null,
                 CustomSubcategoryId = null,
+                EducationId = EducationEngineer,
                 Category = categories.FirstOrDefault(c => c.Id == CategoryPrivate)!,
                 Subcategory = null!,
-                CustomSubcategory = null!
-            },
-            new User
-            {
-                FirstName = "Alicja",
-                LastName = "Adamczyk",
-                Email = "alicja@example.com",
-                PasswordHash = "passwordToHashInFuture-Alicja",
-                Role = RoleNames.UserRole,
-                PhoneNumber = "324934123",
-                Birthday = new DateOnly(1999, 2, 10),
-                CategoryId = CategoryBusiness,
-                SubcategoryId = SubcategoryCoworker,
-                CustomSubcategoryId = null,
-                Category = categories.FirstOrDefault(c => c.Id == CategoryBusiness)!,
-                Subcategory = subcategories.FirstOrDefault(s => s.Id == SubcategoryCoworker)!,
-                CustomSubcategory = null!
+                CustomSubcategory = null!,
+                Education = educations.FirstOrDefault(e => e.Id == EducationEngineer)!
             },
             new User
             {
@@ -132,14 +171,42 @@ public class MockUserService : IUserService
                 Email = "jerzy@example.com",
                 PasswordHash = "passwordToHashInFuture-Jerzy",
                 Role = RoleNames.UserRole,
-                PhoneNumber = "890123657",
-                Birthday = new DateOnly(2001, 5, 24),
+                PhoneNumber = "324934123",
+                Birthday = new DateOnly(1999, 2, 10),
+                Age = 27,
+                Address = "ul. Wymyślona 3, 12-345 Wrocław",
+                JobTitle = "Sprzedawca",
+                Notes = "Pracuje w lokalnym sklepie.",
                 CategoryId = CategoryOther,
                 SubcategoryId = null,
                 CustomSubcategoryId = CustomSubcategoryNeighbor,
+                EducationId = EducationVocational,
                 Category = categories.FirstOrDefault(c => c.Id == CategoryOther)!,
                 Subcategory = null!,
-                CustomSubcategory = customsubcategories.FirstOrDefault(c => c.Id == CustomSubcategoryNeighbor)!
+                CustomSubcategory = customsubcategories.FirstOrDefault(c => c.Id == CustomSubcategoryNeighbor)!,
+                Education = educations.FirstOrDefault(e => e.Id == EducationVocational)!
+            },
+            new User
+            {
+                FirstName = "Alicja",
+                LastName = "Adamczyk",
+                Email = "alicja@example.com",
+                PasswordHash = "passwordToHashInFuture-Alicja",
+                Role = RoleNames.UserRole,
+                PhoneNumber = "890123657",
+                Birthday = new DateOnly(1996, 5, 24),
+                Age = 30,
+                Address = "ul. Nieistotna 7, 12-345 Kraków",
+                JobTitle = "Testerka oprogramowania",
+                Notes = "Współpracowniczka z innego działu.",
+                CategoryId = CategoryBusiness,
+                SubcategoryId = SubcategoryCoworker,
+                CustomSubcategoryId = null,
+                EducationId = EducationMaster,
+                Category = categories.FirstOrDefault(c => c.Id == CategoryBusiness)!,
+                Subcategory = subcategories.FirstOrDefault(s => s.Id == SubcategoryCoworker)!,
+                CustomSubcategory = null!,
+                Education = educations.FirstOrDefault(e => e.Id == EducationMaster)!
             },
             new User
             {
@@ -149,13 +216,19 @@ public class MockUserService : IUserService
                 PasswordHash = "passwordToHashInFuture-Adrian",
                 Role = RoleNames.AdminRole,
                 PhoneNumber = "123123123",
-                Birthday = new DateOnly(2001, 5, 24),
+                Birthday = new DateOnly(2002, 10, 6),
+                Age = 24,
+                Address = "ul. Wymyślona 4, 00-123 Gdańsk",
+                JobTitle = "Student",
+                Notes = "Zamiłowanie do kodu i technologii",
                 CategoryId = CategoryOther,
                 SubcategoryId = null,
                 CustomSubcategoryId = CustomSubcategoryEmployee,
+                EducationId = EducationEngineer,
                 Category = categories.FirstOrDefault(c => c.Id == CategoryOther)!,
                 Subcategory = null!,
-                CustomSubcategory = customsubcategories.FirstOrDefault(c => c.Id == CustomSubcategoryEmployee)!
+                CustomSubcategory = customsubcategories.FirstOrDefault(c => c.Id == CustomSubcategoryEmployee)!,
+                Education = educations.FirstOrDefault(e => e.Id == EducationEngineer)!
             }
         };
     }

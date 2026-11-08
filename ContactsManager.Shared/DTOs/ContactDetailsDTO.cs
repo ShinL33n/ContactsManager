@@ -23,6 +23,12 @@ public class ContactDetailsDTO
     public string? CustomSubcategoryName { get; set; } = null;
 
     public string? Birthday { get; set; }
+    public uint? Age { get; set; }
 
+    public string? Address { get; set; } = null;
 
+    public string? JobTitle { get; set; } = null;
+    public string? Education { get; set; } = null;
+
+    public string? Notes { get; set; } = null;
 }
