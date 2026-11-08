@@ -25,21 +25,40 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(builder);
 
+        // Categories
+        var CategoryBusiness = Guid.Parse("11111111-1111-1111-1111-111111111111");
+        var CategoryPrivate = Guid.Parse("22222222-2222-2222-2222-222222222222");
+        var CategoryOther = Guid.Parse("33333333-3333-3333-3333-333333333333");
+
+        // Subcategories
+        var SubcategoryBoss = Guid.Parse("44444444-4444-4444-4444-444444444441");
+        var SubcategoryClient = Guid.Parse("44444444-4444-4444-4444-444444444442");
+        var SubcategoryCoworker = Guid.Parse("44444444-4444-4444-4444-444444444443");
+        var SubcategoryHR = Guid.Parse("44444444-4444-4444-4444-444444444443");
+
+        // CustomSubcategories
+        var CustomSubcategoryNeighbor = Guid.Parse("55555555-5555-5555-5555-555555555551");
+        var CustomSubcategoryEmployee = Guid.Parse("55555555-5555-5555-5555-555555555552");
+
         builder.Entity<Subcategory>().HasData(
             new Subcategory
             {
+                Id = SubcategoryBoss,
                 Name = SubcategoryNames.Boss
             },
             new Subcategory
             {
+                Id = SubcategoryClient,
                 Name = SubcategoryNames.Client
             },
             new Subcategory
             {
+                Id = SubcategoryCoworker,
                 Name = SubcategoryNames.Coworker
             },
             new Subcategory
             {
+                Id = SubcategoryHR,
                 Name = SubcategoryNames.HR
             }
         );
@@ -47,16 +66,19 @@ public class ApplicationDbContext : DbContext
         builder.Entity<Category>().HasData(
             new Category
             {
+                Id = CategoryPrivate,
                 Name = CategoryNames.Private,
                 SubcategoryMode = SubcategoryMode.None
             },
             new Category
             {
+                Id = CategoryBusiness,
                 Name = CategoryNames.Business,
                 SubcategoryMode = SubcategoryMode.Dictionary
             },
             new Category
             {
+                Id = CategoryOther,
                 Name = CategoryNames.Other,
                 SubcategoryMode = SubcategoryMode.Custom
             }
@@ -83,9 +105,12 @@ public class ApplicationDbContext : DbContext
                 Role = RoleNames.UserRole,
                 PhoneNumber = "123456789",
                 Birthday = new DateOnly(1990, 1, 12),
-                CategoryName = CategoryNames.Private,
-                SubcategoryName = null,
-                CustomSubcategoryName = null
+                CategoryId = CategoryPrivate,
+                SubcategoryId = null,
+                CustomSubcategoryId = null,
+                Category = null!,
+                Subcategory = null!,
+                CustomSubcategory = null!
             },
             new User
             {
@@ -96,9 +121,12 @@ public class ApplicationDbContext : DbContext
                 Role = RoleNames.UserRole,
                 PhoneNumber = "324934123",
                 Birthday = new DateOnly(1999, 2, 10),
-                CategoryName = CategoryNames.Business,
-                SubcategoryName = SubcategoryNames.Coworker,
-                CustomSubcategoryName = null
+                CategoryId = CategoryBusiness,
+                SubcategoryId = SubcategoryCoworker,
+                CustomSubcategoryId = null,
+                Category = null!,
+                Subcategory = null!,
+                CustomSubcategory = null!
             },
             new User
             {
@@ -109,9 +137,12 @@ public class ApplicationDbContext : DbContext
                 Role = RoleNames.UserRole,
                 PhoneNumber = "890123657",
                 Birthday = new DateOnly(2001, 5, 24),
-                CategoryName = CategoryNames.Other,
-                SubcategoryName = null,
-                CustomSubcategoryName = "sąsiad"
+                CategoryId = CategoryOther,
+                SubcategoryId = null,
+                CustomSubcategoryId = CustomSubcategoryNeighbor,
+                Category = null!,
+                Subcategory = null!,
+                CustomSubcategory = null!
             },
             new User
             {
@@ -122,9 +153,12 @@ public class ApplicationDbContext : DbContext
                 Role = RoleNames.AdminRole,
                 PhoneNumber = "123123123",
                 Birthday = new DateOnly(2001, 5, 24),
-                CategoryName = CategoryNames.Other,
-                SubcategoryName = null,
-                CustomSubcategoryName = "przysły pracownik"
+                CategoryId = CategoryOther,
+                SubcategoryId = null,
+                CustomSubcategoryId = CustomSubcategoryEmployee,
+                Category = null!,
+                Subcategory = null!,
+                CustomSubcategory = null!
             }
         );
     }
