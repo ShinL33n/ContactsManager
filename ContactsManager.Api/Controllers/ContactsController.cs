@@ -13,17 +13,15 @@ namespace ContactsManager.Api.Controllers;
 public class ContactsController : Controller
 {
     private readonly IUserService _userService;
-    private readonly ApiResponse _response;
 
     public ContactsController(IUserService userService)
     {
         _userService = userService;
-        _response = new ApiResponse();
     }
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<ActionResult<ApiResponse>> GetAllAsync()
+    public async Task<ActionResult<List<ContactDetailsDTO>>> GetAllAsync()
     {
         IEnumerable<User> users = await _userService.GetAllUsersAsync();
 
@@ -44,24 +42,18 @@ public class ContactsController : Controller
                 CustomSubcategoryName = user.CustomSubcategory?.Name
             });
         }
-        
 
-        _response.Result = contacts;
-        _response.StatusCode = HttpStatusCode.OK;
-        return Ok(_response);
+        return Ok(contacts);
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<ApiResponse>> GetByIdAsync(Guid id)
+    public async Task<ActionResult<ContactDetailsDTO>> GetByIdAsync(Guid id)
     {
         User? user = await _userService.GetUserByIdAsync(id);
 
         if (user == null)
         {
-            _response.IsSuccess = false;
-            _response.StatusCode = HttpStatusCode.NotFound;
-            _response.ErrorMessages.Add("User Not Found");
-            return NotFound(_response);
+            return NotFound();
         }
 
         ContactDetailsDTO contact = new()
@@ -77,9 +69,7 @@ public class ContactsController : Controller
             CustomSubcategoryName = user.CustomSubcategory?.Name
         };
 
-        _response.Result = contact;
-        _response.StatusCode = HttpStatusCode.OK;
-        return Ok(_response);
+        return Ok(contact);
     }
 
 
