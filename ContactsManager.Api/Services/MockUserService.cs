@@ -9,6 +9,12 @@ namespace ContactsManager.Api.Services;
 public class MockUserService : IUserService
 {
     // Categories
+    private static readonly Guid UserOne = Guid.Parse("00000000-0000-0000-0000-000000000001");
+    private static readonly Guid UserTwo = Guid.Parse("00000000-0000-0000-0000-000000000002");
+    private static readonly Guid UserThree = Guid.Parse("00000000-0000-0000-0000-000000000003");
+    private static readonly Guid UserFour = Guid.Parse("00000000-0000-0000-0000-000000000004");
+
+    // Categories
     private static readonly Guid CategoryBusiness = Guid.Parse("11111111-1111-1111-1111-111111111111");
     private static readonly Guid CategoryPrivate = Guid.Parse("22222222-2222-2222-2222-222222222222");
     private static readonly Guid CategoryOther = Guid.Parse("33333333-3333-3333-3333-333333333333");
@@ -144,6 +150,7 @@ public class MockUserService : IUserService
         {
             new User
             {
+                Id = UserOne,
                 FirstName = "Adam",
                 LastName = "Kowalski",
                 Email = "adam@example.com",
@@ -166,6 +173,7 @@ public class MockUserService : IUserService
             },
             new User
             {
+                Id = UserTwo,
                 FirstName = "Jerzy",
                 LastName = "Lewandowski",
                 Email = "jerzy@example.com",
@@ -188,6 +196,7 @@ public class MockUserService : IUserService
             },
             new User
             {
+                Id = UserThree,
                 FirstName = "Alicja",
                 LastName = "Adamczyk",
                 Email = "alicja@example.com",
@@ -210,6 +219,7 @@ public class MockUserService : IUserService
             },
             new User
             {
+                Id = UserFour,
                 FirstName = "Adrian",
                 LastName = "Kisieliński",
                 Email = "adrian@example.com",

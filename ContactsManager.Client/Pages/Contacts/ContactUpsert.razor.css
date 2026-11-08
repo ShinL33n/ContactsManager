@@ -1,0 +1,10 @@
+.btn-outline-accent {
+    color: #4f6644;
+    border-color: var(--accent-dark);
+}
+
+    .btn-outline-accent:hover, .btn-outline-accent:focus-visible {
+        background: var(--accent-light);
+        border-color: var(--accent-dark);
+        color: #14200f;
+    }

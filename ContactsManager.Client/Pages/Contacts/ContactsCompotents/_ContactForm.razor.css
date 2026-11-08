@@ -1,0 +1,48 @@
+.form-card {
+    max-width: 760px;
+    border: 1px solid var(--accent-dark);
+}
+
+.form-header {
+    background: var(--accent-light);
+    color: #14200f;
+    border-bottom: 3px solid var(--accent-dark);
+}
+
+.section-title {
+    color: #4f6644;
+    font-size: 1rem;
+    font-weight: 700;
+    padding-bottom: .35rem;
+    border-bottom: 2px solid var(--accent-light);
+}
+
+/* Focus ring in the accent color */
+.form-control:focus, .form-select:focus {
+    border-color: var(--accent-dark);
+    box-shadow: 0 0 0 .25rem rgba(112, 143, 98, .3);
+}
+
+.btn-accent {
+    background: var(--accent-dark);
+    border-color: var(--accent-dark);
+    color: #fff;
+    font-weight: 700;
+}
+
+    .btn-accent:hover, .btn-accent:focus-visible {
+        background: #5c764f;
+        border-color: #5c764f;
+        color: #fff;
+    }
+
+.btn-outline-accent {
+    color: #4f6644;
+    border-color: var(--accent-dark);
+}
+
+    .btn-outline-accent:hover, .btn-outline-accent:focus-visible {
+        background: var(--accent-light);
+        border-color: var(--accent-dark);
+        color: #14200f;
+    }

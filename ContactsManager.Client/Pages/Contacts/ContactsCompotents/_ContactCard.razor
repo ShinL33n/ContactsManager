@@ -2,47 +2,72 @@
 @using ContactsManager.Shared.Utils
 
 <div class="col pb-3">
-    <article class="card contact-card h-100 shadow-sm">
+    <section class="card contact-card h-100 shadow-sm">
         <div class="card-body">
-        <div class="d-flex align-items-center gap-3 mb-3">
-            <div class="avatar" aria-hidden="true">
-                <a href="contact/@contact.Id" class="inv-link">@contact.FirstName[0]@contact.LastName[0]</a>
-            </div>
-            <div>
-                <h2 class="h5 mb-1 fw-bold">
-                    <a href="contact/@contact.Id" class="inv-link">@contact.FirstName @contact.LastName</a>
-                </h2>
-                <span class="badge category-badge">@contact.CategoryName</span>
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="avatar" aria-hidden="true">
+                    <a href="contact/@contact.Id" class="inv-link">@contact.FirstName[0]@contact.LastName[0]</a>
+                </div>
+                <div>
+                    <h2 class="h5 mb-1 fw-bold">
+                        <a href="contact/@contact.Id" class="inv-link">@contact.FirstName @contact.LastName</a>
+                    </h2>
+                    <span class="badge category-badge">@contact.CategoryName</span>
 
-                @if (contact.CategoryName == CategoryNames.Business)
-                {
-                    <span class="text-body-secondary small ms-1">@contact.SubcategoryName</span>             
-                }
-                else if (contact.CategoryName == CategoryNames.Other)
-                {
-                    <span class="text-body-secondary small ms-1">@contact.CustomSubcategoryName</span>
-                }
+                    @if (contact.CategoryName == CategoryNames.Business)
+                    {
+                        <span class="text-body-secondary small ms-1">@contact.SubcategoryName</span>
+                    }
+                    else if (contact.CategoryName == CategoryNames.Other)
+                    {
+                        <span class="text-body-secondary small ms-1">@contact.CustomSubcategoryName</span>
+                    }
+                </div>
             </div>
-        </div>
+
             <dl class="mb-0">
                 <dt>Email</dt>
                 <dd><a href="mailto:@contact.Email">@contact.Email</a></dd>
-                @if(contact.PhoneNumber != null)
+
+                @if (contact.PhoneNumber != null)
                 {
                     <dt>Telefon</dt>
-                        <dd>+48 @contact.PhoneNumber</dd>
+                    <dd>+48 @contact.PhoneNumber</dd>
                 }
-                @if(contact.Birthday != null)
+
+                @if (contact.Birthday != null)
                 {
                     <dt>Data urodzenia</dt>
-                    <dd>@contact.Birthday</dd>
+                    <dd>
+                        @contact.Birthday
+                        @if (contact.Age != null)
+                        {
+                            <br/>
+                            <span class="col-sm-8">@contact.Age lat</span>
+                        }
+                        else
+                        {
+                            int? age = CalculateAge.FromBirthdayString(contact.Birthday);
+                            if(age != null)
+                            {
+                                <br />
+                                <span class="col-sm-8">@age lat</span>
+                            }
+                        }
+                    </dd>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(contact.Notes))
+                {
+                    <dt>Notatki</dt>
+                    <dd class="notes-preview" title="@contact.Notes">@contact.Notes</dd>
                 }
             </dl>
         </div>
         <div class="card-footer bg-transparent border-0 pt-0 text-end">
             <a href="contact/@contact.Id" class="btn btn-sm btn-outline-accent">Szczegóły</a>
         </div>
-    </article>
+    </section>
 </div>
 
 

@@ -1,0 +1,9 @@
+﻿@contact.FirstName
+
+@code {
+    [Parameter]
+    public bool IsEditMode { get; set; } = true;
+
+    [Parameter]
+    public ContactDetailsDTO? contact { get; set; }
+}

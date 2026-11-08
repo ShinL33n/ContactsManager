@@ -1,4 +1,5 @@
-﻿using ContactsManager.Client.Services.IServices;
+﻿using ContactsManager.Client.Pages;
+using ContactsManager.Client.Services.IServices;
 using ContactsManager.Shared.DTOs;
 using System.Net.Http.Json;
 
@@ -28,5 +29,18 @@ public class ContactService : IContactService
     public async Task<List<ContactPublicDetailsDTO>> GetAllContactsPublicDetailsAsync()
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<ContactDetailsDTO?> GetContactDetailsByIdAsync(Guid id)
+    {
+        try
+        {
+            return await _httpClient.GetFromJsonAsync<ContactDetailsDTO>($"api/contacts/{id}");
+        }
+        catch (Exception)
+        {
+            // log error message
+            return null;
+        }
     }
 }

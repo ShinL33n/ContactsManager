@@ -1,28 +1,28 @@
 ﻿@page "/"
 @using ContactsManager.Client.Services.IServices
-@using ContactsManager.Shared.DTOs
 @inject IContactService ContactService
 
-<PageTitle>Contacts List</PageTitle>
+<PageTitle>Lista kontaktów</PageTitle>
 
 <h1 class="fw-bolder pb-2">Lista kontaktów:</h1>
 
 
 @if(isLoading)
 {
-	<div class="spinner"></div>
 	<p>Ładowanie...</p>
 }
 else if(contacts == null || contacts.Count == 0)
 {
-	<div class="no-contacts">Brak kontaktów</div>
+	<h3 class="pb-2">Brak kontaktów</h3>
 }
 else
 {
-	@foreach (var contact in contacts)
-	{
-		<_ContactCard Contact="contact" />
-	}
+	<div class="row row-cols-1 row-cols-md-2 gy-0 gx-3">
+		@foreach (var contact in contacts)
+		{
+			<_ContactCard @key="contact.Id" Contact="contact" />
+		}
+	</div>
 }
 
 @code {

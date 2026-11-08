@@ -1,8 +1,186 @@
 ﻿@page "/contact/{Id:guid}"
+@using ContactsManager.Client.Services.IServices
+@using ContactsManager.Shared.Utils
+@inject IContactService ContactService
+@inject NavigationManager Navigation
 
-<h3>ContactDetails</h3>
+<PageTitle>Szczegóły kontaktu</PageTitle>
+
+<a href="/" class="btn btn-sm btn-outline-accent mb-3">&larr; Wróć do listy</a>
+
+<h1 class="fw-bolder pb-2">Szczegóły kontaktu:</h1>
+
+@if(contact != null)
+{
+    <div class="card details-card shadow-sm mb-3">
+
+        <header class="details-header p-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="avatar" aria-hidden="true">@contact.FirstName[0]@contact.LastName[0]</div>
+                <div class="flex-grow-1">
+                    <h1 class="h3 fw-bold mb-1">@contact.FirstName @contact.LastName</h1>
+                    @if (contact.JobTitle != null)
+                    {
+                        <p class="mb-2">@contact.JobTitle</p>
+                    }
+                    <span class="badge category-badge me-1">@contact.CategoryName</span>
+                    @if (contact.CategoryName == CategoryNames.Business)
+                    {
+                        <span class="badge category-badge me-1">@contact.SubcategoryName</span>
+                    }
+                    else if (contact.CategoryName == CategoryNames.Other)
+                    {
+                        <span class="badge category-badge me-1">@contact.CustomSubcategoryName</span>
+                    }
+                    <span class="badge text-bg-secondary">Placeholder na rolę</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="card-body p-4">
+
+            <section class="mb-4">
+                <h2 class="section-title mb-3">Dane kontaktowe</h2>
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">E-mail</dt>
+                    <dd class="col-sm-8"><a href="mailto:@contact.Email">@contact.Email</a></dd>
+
+                    <dt class="col-sm-4">Telefon</dt>
+                    @if (contact.PhoneNumber != null)
+                    {
+                        <dd class="col-sm-8">+48 @contact.PhoneNumber</dd>
+                    }
+                    else
+                    {
+                        <dd class="col-sm-8 text-body-secondary">Nie podano</dd>
+                    }
+
+                    <dt class="col-sm-4">Adres</dt>
+                    @if (contact.Address != null)
+                    {
+                        <dd class="col-sm-8">ul. Długa 12/4, 80-827 Gdańsk</dd>                        
+                    }
+                    else
+                    {
+						<dd class="col-sm-8 text-body-secondary">Nie podano</dd>
+                    }
+                </dl>
+            </section>
+
+            <section class="mb-4">
+                <h2 class="section-title mb-3">Dane osobowe</h2>
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Data urodzenia</dt>
+                    @if(contact.Birthday != null)
+                    {
+                        <dd class="col-sm-8">@contact.Birthday</dd>
+                    }
+                    else
+                    {
+                        <dd class="col-sm-8 text-body-secondary">Nie podano</dd>
+                    }
+
+                    <dt class="col-sm-4">Wiek</dt>
+                    @if (contact.Age == null && contact.Birthday != null)
+					{
+                        int? age = CalculateAge.FromBirthdayString(contact.Birthday);
+                        if (age != null)
+                        {
+                            <dd class="col-sm-8">@age lat</dd>
+                        }
+                        
+					}
+                    else if (contact.Age == null && contact.Birthday == null)
+                    {
+                        <dd class="col-sm-8 text-body-secondary">Nie podano</dd>
+                    }
+                    else
+                    {
+                        <dd class="col-sm-8">@contact.Age lat</dd>
+                    }
+
+                    <dt class="col-sm-4">Wykształcenie</dt>
+                    @if (contact.Education != null)
+                    {
+                        <dd class="col-sm-8">@contact.Education</dd>
+                    }
+                    else
+                    {
+                        <dd class="col-sm-8 text-body-secondary">Nie podano</dd>
+                    }
+
+                    <dt class="col-sm-4">Stanowisko</dt>
+					@if (contact.JobTitle != null)
+					{
+						<dd class="col-sm-8">@contact.JobTitle</dd>
+					}
+					else
+					{
+						<dd class="col-sm-8 text-body-secondary">Nie podano</dd>
+					}
+                </dl>
+            </section>
+
+            <section class="mb-4">
+                <h2 class="section-title mb-3">Kategoria</h2>
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Kategoria</dt>
+                    <dd class="col-sm-8">Służbowy</dd>
+
+                    <dt class="col-sm-4">Podkategoria</dt>
+                    @if (contact.CategoryName == CategoryNames.Business)
+                    {
+                        <dd class="col-sm-8">@contact.SubcategoryName</dd>
+                    }
+                    else if (contact.CategoryName == CategoryNames.Other)
+                    {
+                        <dd class="col-sm-8">@contact.CustomSubcategoryName</dd>
+                    }
+					else
+					{
+						<dd class="col-sm-8 text-body-secondary">Brak</dd>
+					}
+                </dl>
+            </section>
+
+            <section>
+                <h2 class="section-title mb-3">Notatki</h2>
+				@if (contact.Notes == null)
+				{
+					<p class="notes mb-0 text-body-secondary">Brak notatek</p>
+				}
+				else
+				{
+					<p class="notes mb-0">@contact.Notes</p>
+				}
+            </section>
+        </div>
+
+        <!-- Visible only for logged-in users (edit) and admins (delete) -->
+        <footer class="card-footer bg-transparent d-flex justify-content-end gap-2 p-3">
+            <button type="button" class="btn btn-outline-danger" disabled>Usuń</button>
+            <a href="/upsert/@contact.Id" class="btn btn-accent" disabled>Edytuj</a>
+        </footer>
+    </div>
+}
+
+
+@* <_Contact IsEditMode="false" contact="contact"/> *@
 
 @code {
-	[Parameter]
-	public Guid Id { get; set; }
+    [Parameter]
+    public Guid Id { get; set; }
+
+    [Parameter]
+    public ContactDetailsDTO? contact { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        contact = await ContactService.GetContactDetailsByIdAsync(Id);
+        if(contact == null)
+        {
+            Navigation.NotFound();
+        }
+    }
 }
