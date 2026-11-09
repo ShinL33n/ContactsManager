@@ -26,12 +26,12 @@ else
 }
 
 @code {
-	private List<ContactDetailsDTO> contacts = new();
+	private IReadOnlyList<ContactPublicDTO> contacts = [];
 	private bool isLoading = true;
 
 	protected override async Task OnInitializedAsync()
 	{
-		contacts = await ContactService.GetAllContactsDetailsAsync();
+		contacts = await ContactService.GetAllContactsAsync();
 		isLoading = false;
 	}
 }

@@ -10,27 +10,27 @@
 
 <h1 class="fw-bolder pb-2">Szczegóły kontaktu:</h1>
 
-@if(contact != null)
+@if(Contact != null)
 {
     <div class="card details-card shadow-sm mb-3">
 
         <header class="details-header p-4">
             <div class="d-flex align-items-center gap-3">
-                <div class="avatar" aria-hidden="true">@contact.FirstName[0]@contact.LastName[0]</div>
+                <div class="avatar" aria-hidden="true">@Contact.FirstName[0]@Contact.LastName[0]</div>
                 <div class="flex-grow-1">
-                    <h1 class="h3 fw-bold mb-1">@contact.FirstName @contact.LastName</h1>
-                    @if (contact.JobTitle != null)
+                    <h1 class="h3 fw-bold mb-1">@Contact.FirstName @Contact.LastName</h1>
+                    @if (fullContact?.JobTitle != null)
                     {
-                        <p class="mb-2">@contact.JobTitle</p>
+                        <p class="mb-2">@fullContact.JobTitle</p>
                     }
-                    <span class="badge category-badge me-1">@contact.CategoryName</span>
-                    @if (contact.CategoryName == CategoryNames.Business)
+                    <span class="badge category-badge me-1">@Contact.CategoryName</span>
+                    @if (Contact.CategoryName == CategoryNames.Business)
                     {
-                        <span class="badge category-badge me-1">@contact.SubcategoryName</span>
+                        <span class="badge category-badge me-1">@Contact.SubcategoryName</span>
                     }
-                    else if (contact.CategoryName == CategoryNames.Other)
+                    else if (Contact.CategoryName == CategoryNames.Other)
                     {
-                        <span class="badge category-badge me-1">@contact.CustomSubcategoryName</span>
+                        <span class="badge category-badge me-1">@Contact.CustomSubcategoryName</span>
                     }
                     <span class="badge text-bg-secondary">Placeholder na rolę</span>
                 </div>
@@ -43,26 +43,26 @@
                 <h2 class="section-title mb-3">Dane kontaktowe</h2>
                 <dl class="row mb-0">
                     <dt class="col-sm-4">E-mail</dt>
-                    <dd class="col-sm-8"><a href="mailto:@contact.Email">@contact.Email</a></dd>
+                    <dd class="col-sm-8"><a href="mailto:@Contact.Email">@Contact.Email</a></dd>
 
                     <dt class="col-sm-4">Telefon</dt>
-                    @if (contact.PhoneNumber != null)
+                    @if (Contact.PhoneNumber != null)
                     {
-                        <dd class="col-sm-8">+48 @contact.PhoneNumber</dd>
+                        <dd class="col-sm-8">+48 @Contact.PhoneNumber</dd>
                     }
                     else
                     {
-                        <dd class="col-sm-8 text-body-secondary">Nie podano</dd>
+                        <dd class="col-sm-8 text-body-secondary">@NotProvidedChar()</dd>
                     }
 
                     <dt class="col-sm-4">Adres</dt>
-                    @if (contact.Address != null)
+                    @if (fullContact?.Address != null)
                     {
-                        <dd class="col-sm-8">ul. Długa 12/4, 80-827 Gdańsk</dd>                        
+                        <dd class="col-sm-8">@fullContact.Address</dd>                        
                     }
                     else
                     {
-						<dd class="col-sm-8 text-body-secondary">Nie podano</dd>
+						<dd class="col-sm-8 text-body-secondary">@NotProvidedChar()</dd>
                     }
                 </dl>
             </section>
@@ -71,52 +71,52 @@
                 <h2 class="section-title mb-3">Dane osobowe</h2>
                 <dl class="row mb-0">
                     <dt class="col-sm-4">Data urodzenia</dt>
-                    @if(contact.Birthday != null)
+                    @if(fullContact?.Birthday != null)
                     {
-                        <dd class="col-sm-8">@contact.Birthday</dd>
+                        <dd class="col-sm-8">@fullContact.Birthday?.ToString("dd.MM.yyyy")</dd>
                     }
                     else
                     {
-                        <dd class="col-sm-8 text-body-secondary">Nie podano</dd>
+                        <dd class="col-sm-8 text-body-secondary">@NotProvidedChar()</dd>
                     }
 
                     <dt class="col-sm-4">Wiek</dt>
-                    @if (contact.Age == null && contact.Birthday != null)
+                    @if (Contact.Age == null && fullContact?.Birthday != null)
 					{
-                        int? age = CalculateAge.FromBirthdayString(contact.Birthday);
+                        int? age = fullContact.Birthday is DateOnly birthday ? CalculateAge.FromBirthday(birthday) : null;
                         if (age != null)
                         {
                             <dd class="col-sm-8">@age lat</dd>
                         }
                         
 					}
-                    else if (contact.Age == null && contact.Birthday == null)
+                    else if (Contact.Age == null && fullContact?.Birthday == null)
                     {
-                        <dd class="col-sm-8 text-body-secondary">Nie podano</dd>
+                        <dd class="col-sm-8 text-body-secondary">@NotProvidedChar()</dd>
                     }
                     else
                     {
-                        <dd class="col-sm-8">@contact.Age lat</dd>
+                        <dd class="col-sm-8">@Contact.Age lat</dd>
                     }
 
                     <dt class="col-sm-4">Wykształcenie</dt>
-                    @if (contact.Education != null)
+                    @if (fullContact?.Education != null)
                     {
-                        <dd class="col-sm-8">@contact.Education</dd>
+                        <dd class="col-sm-8">@fullContact.Education</dd>
                     }
                     else
                     {
-                        <dd class="col-sm-8 text-body-secondary">Nie podano</dd>
+                        <dd class="col-sm-8 text-body-secondary">@NotProvidedChar()</dd>
                     }
 
                     <dt class="col-sm-4">Stanowisko</dt>
-					@if (contact.JobTitle != null)
+					@if (fullContact?.JobTitle != null)
 					{
-						<dd class="col-sm-8">@contact.JobTitle</dd>
+						<dd class="col-sm-8">@fullContact.JobTitle</dd>
 					}
 					else
 					{
-						<dd class="col-sm-8 text-body-secondary">Nie podano</dd>
+                        <dd class="col-sm-8 text-body-secondary">@NotProvidedChar()</dd>
 					}
                 </dl>
             </section>
@@ -128,13 +128,13 @@
                     <dd class="col-sm-8">Służbowy</dd>
 
                     <dt class="col-sm-4">Podkategoria</dt>
-                    @if (contact.CategoryName == CategoryNames.Business)
+                    @if (Contact.CategoryName == CategoryNames.Business)
                     {
-                        <dd class="col-sm-8">@contact.SubcategoryName</dd>
+                        <dd class="col-sm-8">@Contact.SubcategoryName</dd>
                     }
-                    else if (contact.CategoryName == CategoryNames.Other)
+                    else if (Contact.CategoryName == CategoryNames.Other)
                     {
-                        <dd class="col-sm-8">@contact.CustomSubcategoryName</dd>
+                        <dd class="col-sm-8">@Contact.CustomSubcategoryName</dd>
                     }
 					else
 					{
@@ -145,13 +145,13 @@
 
             <section>
                 <h2 class="section-title mb-3">Notatki</h2>
-				@if (contact.Notes == null)
+				@if (fullContact?.Notes == null)
 				{
 					<p class="notes mb-0 text-body-secondary">Brak notatek</p>
 				}
 				else
 				{
-					<p class="notes mb-0">@contact.Notes</p>
+                    <p class="notes mb-0">@fullContact.Notes</p>
 				}
             </section>
         </div>
@@ -159,7 +159,7 @@
         <!-- Visible only for logged-in users (edit) and admins (delete) -->
         <footer class="card-footer bg-transparent d-flex justify-content-end gap-2 p-3">
             <button type="button" class="btn btn-outline-danger" disabled>Usuń</button>
-            <a href="/upsert/@contact.Id" class="btn btn-accent" disabled>Edytuj</a>
+            <a href="/upsert/@Contact.Id" class="btn btn-accent" disabled>Edytuj</a>
         </footer>
     </div>
 }
@@ -172,15 +172,19 @@
     public Guid Id { get; set; }
 
     [Parameter]
-    public ContactDetailsDTO? contact { get; set; }
+    public ContactPublicDTO? Contact { get; set; }
+
+    private ContactDetailsDTO? fullContact => Contact as ContactDetailsDTO;
 
 
     protected override async Task OnInitializedAsync()
     {
-        contact = await ContactService.GetContactDetailsByIdAsync(Id);
-        if(contact == null)
+        Contact = await ContactService.GetContactDetailsByIdAsync(Id);
+        if(Contact == null)
         {
             Navigation.NotFound();
         }
     }
+
+    private char NotProvidedChar() => '—';
 }

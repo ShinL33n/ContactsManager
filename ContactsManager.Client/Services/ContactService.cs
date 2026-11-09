@@ -1,5 +1,4 @@
-﻿using ContactsManager.Client.Pages;
-using ContactsManager.Client.Services.IServices;
+﻿using ContactsManager.Client.Services.IServices;
 using ContactsManager.Shared.DTOs;
 using System.Net.Http.Json;
 
@@ -13,34 +12,31 @@ public class ContactService : IContactService
         _httpClient = httpClient;
     }
 
-    public async Task<List<ContactDetailsDTO>> GetAllContactsDetailsAsync()
+    public async Task<IReadOnlyList<ContactPublicDTO>> GetAllContactsAsync()
     {
-        try
+        if(await IsLoggedInAsync())
         {
-            return await _httpClient.GetFromJsonAsync<List<ContactDetailsDTO>>("api/contacts") ?? [];
+            var fullDetailsContacts = await _httpClient.GetFromJsonAsync<List<ContactDetailsDTO>>("api/contacts/full") ?? [];
+            return fullDetailsContacts;
         }
-        catch (Exception)
-        {
-            // log error message
-            return [];
-        }
+
+        return await _httpClient.GetFromJsonAsync<List<ContactPublicDTO>>("api/contacts") ?? [];
     }
 
-    public async Task<List<ContactPublicDetailsDTO>> GetAllContactsPublicDetailsAsync()
+    public async Task<ContactPublicDTO?> GetContactDetailsByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        if (await IsLoggedInAsync())
+        {
+            var fullDetailsContact = await _httpClient.GetFromJsonAsync<ContactDetailsDTO>($"api/contacts/{id}/full") ?? null;
+            return fullDetailsContact;
+        }
+
+        return await _httpClient.GetFromJsonAsync<ContactPublicDTO>($"api/contacts/{id}") ?? null;
     }
 
-    public async Task<ContactDetailsDTO?> GetContactDetailsByIdAsync(Guid id)
+    private async Task<bool> IsLoggedInAsync()
     {
-        try
-        {
-            return await _httpClient.GetFromJsonAsync<ContactDetailsDTO>($"api/contacts/{id}");
-        }
-        catch (Exception)
-        {
-            // log error message
-            return null;
-        }
+        return await Task.FromResult(true);
+        // auth function here
     }
 }

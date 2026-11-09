@@ -4,7 +4,7 @@ namespace ContactsManager.Shared.Utils;
 
 public static class CalculateAge
 {
-    private static int FromToday(DateOnly birthday)
+    public static int FromBirthday(DateOnly birthday)
     {
         var today = DateOnly.FromDateTime(DateTime.Today);
         int age = today.Year - birthday.Year;
@@ -12,14 +12,14 @@ public static class CalculateAge
         return age;
     }
 
-    public static int? FromBirthdayString(string birthdayText)
-    {
-        if (DateOnly.TryParseExact(birthdayText, "dd.MM.yyyy", CultureInfo.InvariantCulture,
-            DateTimeStyles.None, out DateOnly birthday))
-        {
-            return CalculateAge.FromToday(birthday);
-        }
+    //public static int? FromBirthdayString(string birthdayText)
+    //{
+    //    if (DateOnly.TryParseExact(birthdayText, "dd.MM.yyyy", CultureInfo.InvariantCulture,
+    //        DateTimeStyles.None, out DateOnly birthday))
+    //    {
+    //        return CalculateAge.FromToday(birthday);
+    //    }
 
-        return null;
-    }
+    //    return null;
+    //}
 }

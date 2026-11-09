@@ -1,78 +1,85 @@
 ﻿@using ContactsManager.Shared.DTOs
 @using ContactsManager.Shared.Utils
 
+
+
 <div class="col pb-3">
     <section class="card contact-card h-100 shadow-sm">
         <div class="card-body">
             <div class="d-flex align-items-center gap-3 mb-3">
                 <div class="avatar" aria-hidden="true">
-                    <a href="contact/@contact.Id" class="inv-link">@contact.FirstName[0]@contact.LastName[0]</a>
+                    <a href="contact/@Contact.Id" class="inv-link">@Contact.FirstName[0]@Contact.LastName[0]</a>
                 </div>
                 <div>
                     <h2 class="h5 mb-1 fw-bold">
-                        <a href="contact/@contact.Id" class="inv-link">@contact.FirstName @contact.LastName</a>
+                        <a href="contact/@Contact.Id" class="inv-link">@Contact.FirstName @Contact.LastName</a>
                     </h2>
-                    <span class="badge category-badge">@contact.CategoryName</span>
+                    <span class="badge category-badge">@Contact.CategoryName</span>
 
-                    @if (contact.CategoryName == CategoryNames.Business)
+                    @if (Contact.CategoryName == CategoryNames.Business)
                     {
-                        <span class="text-body-secondary small ms-1">@contact.SubcategoryName</span>
+                        <span class="text-body-secondary small ms-1">@Contact.SubcategoryName</span>
                     }
-                    else if (contact.CategoryName == CategoryNames.Other)
+                    else if (Contact.CategoryName == CategoryNames.Other)
                     {
-                        <span class="text-body-secondary small ms-1">@contact.CustomSubcategoryName</span>
+                        <span class="text-body-secondary small ms-1">@Contact.CustomSubcategoryName</span>
                     }
                 </div>
             </div>
 
             <dl class="mb-0">
                 <dt>Email</dt>
-                <dd><a href="mailto:@contact.Email">@contact.Email</a></dd>
+                <dd><a href="mailto:@Contact.Email">@Contact.Email</a></dd>
 
-                @if (contact.PhoneNumber != null)
+                @if (Contact.PhoneNumber != null)
                 {
                     <dt>Telefon</dt>
-                    <dd>+48 @contact.PhoneNumber</dd>
+                    <dd>+48 @Contact.PhoneNumber</dd>
                 }
 
-                @if (contact.Birthday != null)
+                @if (Contact is ContactDetailsDTO fullContact)
                 {
-                    <dt>Data urodzenia</dt>
-                    <dd>
-                        @contact.Birthday
-                        @if (contact.Age != null)
-                        {
-                            <br/>
-                            <span class="col-sm-8">@contact.Age lat</span>
-                        }
-                        else
-                        {
-                            int? age = CalculateAge.FromBirthdayString(contact.Birthday);
-                            if(age != null)
+                    @if (fullContact.Birthday != null)
+                    {
+                        <dt>Data urodzenia</dt>
+                        <dd>
+                            @fullContact.Birthday?.ToString("dd.MM.yyyy")
+                            @if (fullContact.Age != null)
                             {
                                 <br />
-                                <span class="col-sm-8">@age lat</span>
+                                <span class="col-sm-8">@fullContact.Age lat</span>
                             }
-                        }
-                    </dd>
-                }
+                            else
+                            {
+                                int? age = fullContact.Birthday is DateOnly birthday ? CalculateAge.FromBirthday(birthday) : null;
+                                if (age != null)
+                                {
+                                    <br />
+                                    <span class="col-sm-8">@age lat</span>
+                                }
 
-                @if (!string.IsNullOrWhiteSpace(contact.Notes))
-                {
-                    <dt>Notatki</dt>
-                    <dd class="notes-preview" title="@contact.Notes">@contact.Notes</dd>
+                            }
+                        </dd>
+                    }
+
+
+                    @if (!string.IsNullOrWhiteSpace(fullContact.Notes))
+                    {
+                        <dt>Notatki</dt>
+                        <dd class="notes-preview" title="@fullContact.Notes">@fullContact.Notes</dd>
+                    }
                 }
             </dl>
         </div>
         <div class="card-footer bg-transparent border-0 pt-0 text-end">
-            <a href="contact/@contact.Id" class="btn btn-sm btn-outline-accent">Szczegóły</a>
+            <a href="contact/@Contact.Id" class="btn btn-sm btn-outline-accent">Szczegóły</a>
         </div>
     </section>
 </div>
 
 
+
 @code {
-    [Parameter]
-    public ContactDetailsDTO contact { get; set; } = null!;
-    //public T contact { get; set; } = null!;
+    [Parameter] [EditorRequired]
+    public ContactPublicDTO Contact { get; set; } = null!;
 }

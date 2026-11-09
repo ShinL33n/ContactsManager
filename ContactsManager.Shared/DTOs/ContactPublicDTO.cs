@@ -6,7 +6,7 @@
 /// <remarks>
 /// It contains only the basic fields needed for displaying a contact in a home page list by unuthorized users.
 /// </remarks>
-public class ContactPublicDetailsDTO
+public class ContactPublicDTO
 {
     public Guid Id { get; set; }
 
