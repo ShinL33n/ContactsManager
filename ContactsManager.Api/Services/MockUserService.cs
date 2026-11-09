@@ -8,7 +8,7 @@ namespace ContactsManager.Api.Services;
 
 public class MockUserService : IUserService
 {
-    // Categories
+    // Users
     private static readonly Guid UserOne = Guid.Parse("00000000-0000-0000-0000-000000000001");
     private static readonly Guid UserTwo = Guid.Parse("00000000-0000-0000-0000-000000000002");
     private static readonly Guid UserThree = Guid.Parse("00000000-0000-0000-0000-000000000003");

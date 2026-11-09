@@ -36,7 +36,7 @@ public class ContactService : IContactService
 
     private async Task<bool> IsLoggedInAsync()
     {
-        return await Task.FromResult(true);
+        return await Task.FromResult(false);
         // auth function here
     }
 }

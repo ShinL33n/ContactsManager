@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ContactsManager.Api.Controllers;
 
-[ApiController] [Route("api/[controller]")] //[Authorize]
+[ApiController] [Route("api/[controller]")] [Authorize]
 public class ContactsController : Controller
 {
     private readonly IUserService _userService;
@@ -27,18 +27,6 @@ public class ContactsController : Controller
         foreach (var user in users)
         {
             contacts.Add(user.ToContactPublicDTO());
-            //contacts.Add(new ContactPublicDTO
-            //{
-            //    Id = user.Id,
-            //    FirstName = user.FirstName,
-            //    LastName = user.LastName,
-            //    Email = user.Email,
-            //    PhoneNumber = user.PhoneNumber,
-            //    CategoryName = user.Category.Name,
-            //    SubcategoryName = user.Subcategory?.Name,
-            //    CustomSubcategoryName = user.CustomSubcategory?.Name,
-            //    Age = user.Age
-            //});
         }
 
         return Ok(contacts);
@@ -54,23 +42,6 @@ public class ContactsController : Controller
         foreach (var user in users)
         {
             contacts.Add(user.ToContactDetailsDTO());
-            //contacts.Add(new ContactDetailsDTO
-            //{
-            //    Id = user.Id,
-            //    FirstName = user.FirstName,
-            //    LastName = user.LastName,
-            //    Email = user.Email,
-            //    PhoneNumber = user.PhoneNumber,
-            //    Birthday = user.Birthday,
-            //    CategoryName = user.Category.Name,
-            //    SubcategoryName = user.Subcategory?.Name,
-            //    CustomSubcategoryName = user.CustomSubcategory?.Name,
-            //    Age = user.Age,
-            //    Address = user.Address,
-            //    JobTitle = user.JobTitle,
-            //    Education = user.Education?.Name,
-            //    Notes = user.Notes
-            //});
         }
 
         return Ok(contacts);
@@ -88,19 +59,6 @@ public class ContactsController : Controller
 
         ContactPublicDTO contact = user.ToContactPublicDTO();
 
-        //ContactPublicDTO contact = new()
-        //{
-        //    Id = user.Id,
-        //    FirstName = user.FirstName,
-        //    LastName = user.LastName,
-        //    Email = user.Email,
-        //    PhoneNumber = user.PhoneNumber,
-        //    CategoryName = user.Category.Name,
-        //    SubcategoryName = user.Subcategory?.Name,
-        //    CustomSubcategoryName = user.CustomSubcategory?.Name,
-        //    Age = user.Age
-        //};
-
         return Ok(contact);
     }
 
@@ -115,23 +73,6 @@ public class ContactsController : Controller
         }
 
         ContactDetailsDTO contact = user.ToContactDetailsDTO();
-        //ContactDetailsDTO contact = new()
-        //{
-        //    Id = user.Id,
-        //    FirstName = user.FirstName,
-        //    LastName = user.LastName,
-        //    Email = user.Email,
-        //    PhoneNumber = user.PhoneNumber,
-        //    Birthday = user.Birthday,
-        //    CategoryName = user.Category.Name,
-        //    SubcategoryName = user.Subcategory?.Name,
-        //    CustomSubcategoryName = user.CustomSubcategory?.Name,
-        //    Age = user.Age,
-        //    Address = user.Address,
-        //    JobTitle = user.JobTitle,
-        //    Education = user.Education?.Name,
-        //    Notes = user.Notes
-        //};
 
         return Ok(contact);
     }
