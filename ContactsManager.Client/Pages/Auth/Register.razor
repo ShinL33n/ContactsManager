@@ -1,7 +1,50 @@
 ﻿@page "/register"
 
-<h3>Register</h3>
+<PageTitle>Rejestracja</PageTitle>
+
+<div class="card register-card shadow-sm border-0">
+    <div class="card-body p-4 p-md-5">
+        <h1 class="h3 text-center mb-4 register-title">Rejestracja</h1>
+
+        <EditForm Model="model" OnValidSubmit="HandleRegister">
+            <DataAnnotationsValidator />
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <InputText id="email" class="form-control" @bind-Value="model.Email" />
+                <ValidationMessage For="() => model.Email" class="text-danger small" />
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Hasło</label>
+                <InputText id="password" type="password" class="form-control" @bind-Value="model.Password" />
+                <ValidationMessage For="() => model.Password" class="text-danger small" />
+            </div>
+
+            <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Potwierdź hasło</label>
+                <InputText id="confirmPassword" type="password" class="form-control" @bind-Value="model.ConfirmPassword" />
+                <ValidationMessage For="() => model.ConfirmPassword" class="text-danger small" />
+            </div>
+
+            <button type="submit" class="btn btn-accent w-100" disabled="@isBusy">
+                @if (isBusy)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                }
+                Zarejestruj się
+            </button>
+        </EditForm>
+    </div>
+</div>
 
 @code {
+    private RegisterRequestDTO model = new();
+    //private bool error;
+    private bool isBusy;
 
+    private async Task HandleRegister()
+    {
+        
+    }
 }

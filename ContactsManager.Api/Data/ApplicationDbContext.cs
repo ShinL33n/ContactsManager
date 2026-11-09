@@ -2,7 +2,6 @@
 using ContactsManager.Shared.Enums;
 using ContactsManager.Shared.Utils;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ContactsManager.Api.Data;
 
@@ -25,6 +24,8 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        var adminPassword = _configuration["AdminPassword"]!;
 
         // Categories
         var CategoryBusiness = Guid.Parse("11111111-1111-1111-1111-111111111111");

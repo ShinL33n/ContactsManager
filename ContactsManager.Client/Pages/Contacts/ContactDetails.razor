@@ -1,4 +1,5 @@
 ﻿@page "/contact/{Id:guid}"
+@using System.Security.Claims
 @using ContactsManager.Client.Services.IServices
 @using ContactsManager.Shared.Utils
 @inject IContactService ContactService
@@ -156,16 +157,30 @@
             </section>
         </div>
 
-        <!-- Visible only for logged-in users (edit) and admins (delete) -->
         <footer class="card-footer bg-transparent d-flex justify-content-end gap-2 p-3">
-            <button type="button" class="btn btn-outline-danger" disabled>Usuń</button>
-            <a href="/upsert/@Contact.Id" class="btn btn-accent" disabled>Edytuj</a>
+            <AuthorizeView Roles="@RoleNames.AdminRole">
+                <button type="button" class="btn btn-outline-danger" @onclick="DeleteAsync">Usuń</button>
+            </AuthorizeView>
+
+            <AuthorizeView>
+                <Authorized>
+                    @if (context.User.IsInRole(RoleNames.AdminRole) ||
+                         context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value == Contact.Id.ToString())
+                    {
+                        <a href="contact/@Contact.Id/edit" class="btn btn-accent">Edytuj</a>
+                    }
+                    else
+                    {
+                        <a href="/" class="btn btn-sm btn-outline-accent">&larr; Wróć do listy</a>
+                    }
+                </Authorized>
+                <NotAuthorized>
+                    <a href="/" class="btn btn-sm btn-outline-accent">&larr; Wróć do listy</a>
+                </NotAuthorized>
+            </AuthorizeView>
         </footer>
     </div>
 }
-
-
-@* <_Contact IsEditMode="false" contact="contact"/> *@
 
 @code {
     [Parameter]
@@ -184,6 +199,12 @@
         {
             Navigation.NotFound();
         }
+    }
+
+    private Task DeleteAsync()
+    {
+        // TO-DO: call the delete endpoint
+        return Task.CompletedTask;
     }
 
     private char NotProvidedChar() => '—';

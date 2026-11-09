@@ -1,6 +1,8 @@
+using ContactsManager.Api.Models;
 using ContactsManager.Api.Services;
 using ContactsManager.Api.Services.IServices;
 using ContactsManager.Api.Startup;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -19,6 +21,9 @@ builder.Services.AddDbContext<ContactsManager.Api.Data.ApplicationDbContext>(opt
 
 builder.Services.AddCorsConfiguration(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
+
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<JwtTokenService>();
 
 var app = builder.Build();
 

@@ -3,6 +3,19 @@
     --accent-dark: #708F62;
 }
 
+.btn-accent {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--accent-dark);
+    --bs-btn-border-color: var(--accent-dark);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #5f7a53;
+    --bs-btn-hover-border-color: #5f7a53;
+    --bs-btn-active-bg: #55704a;
+    --bs-btn-active-border-color: #55704a;
+    --bs-btn-disabled-bg: var(--accent-light);
+    --bs-btn-disabled-border-color: var(--accent-light);
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }

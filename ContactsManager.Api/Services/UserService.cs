@@ -44,4 +44,9 @@ public class UserService : IUserService
     {
         throw new NotImplementedException();
     }
+
+    public Task<User?> GetUserByEmailAsync(string email)
+    {
+        throw new NotImplementedException();
+    }
 }

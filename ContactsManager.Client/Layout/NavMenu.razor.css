@@ -81,3 +81,43 @@
         overflow-y: auto;
     }
 }
+
+.nav-element {
+    display: block;
+    padding: var(--bs-nav-link-padding-y) var(--bs-nav-link-padding-x);
+    font-size: var(--bs-nav-link-font-size);
+    font-weight: var(--bs-nav-link-font-weight);
+    color: rgb(40, 40, 40);
+    text-decoration: none;
+    background: 0 0;
+    border: 0;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out;
+    font-size: 0.9rem;
+    padding-bottom: 0.5rem;
+     color: #d7d7d7; 
+     color: rgb(40, 40, 40); 
+     border-radius: 4px; 
+     height: 3rem; 
+     display: flex; 
+     align-items: center; 
+     line-height: 3rem;
+}
+
+    .nav-item ::deep button {
+        width: 100%;
+        text-align: left;
+    }
+
+    .nav-element ::deep div{
+        color: rgb(40, 40, 40);
+        border-radius: 4px;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        line-height: 3rem;
+    }
+
+    .nav-item ::deep div:hover{
+        background-color: rgba(255,255,255,0.1);
+        color: #181818;
+    }

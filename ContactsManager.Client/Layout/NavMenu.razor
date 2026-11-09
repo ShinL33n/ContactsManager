@@ -1,6 +1,8 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@inject IAuthService Auth
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href=""><i class="bi bi-person-lines-fill"></i>Contacts Manager</a>
+        <a class="navbar-brand" href=""><i class="bi bi-person-lines-fill"></i>Menadżer Kontaktów</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -11,19 +13,40 @@
     <nav class="nav flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <i class="bi bi-journal-bookmark"></i> Contacts
+                <i class="bi bi-journal-bookmark"></i> Kontakty
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="login">
-                <i class="bi bi-person"></i> Login
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="register">
-                <i class="bi bi-person-add"></i> Register
-            </NavLink>
-        </div>
+
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-3">
+                    <div class="nav-element">
+                        <i class="bi bi-person-circle"></i> @context.User.Identity?.Name
+                    </div>
+                </div>
+                
+                <div class="nav-item px-3">
+                    <div>
+                        <button class="nav-element" @onclick="Auth.LogoutAsync">
+                            <i class="bi bi-box-arrow-right"></i> Wyloguj
+                        </button>
+                    </div>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="login">
+                        <i class="bi bi-person"></i> Zaloguj
+                    </NavLink>
+                </div>
+                
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="register">
+                        <i class="bi bi-person-add"></i> Zarejestruj
+                    </NavLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
     </nav>
 </div>
 

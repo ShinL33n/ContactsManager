@@ -52,6 +52,4 @@ public class User
 
 
     public User() { Id = Guid.NewGuid(); }
-
-
 }

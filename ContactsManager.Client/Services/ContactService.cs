@@ -1,4 +1,5 @@
-﻿using ContactsManager.Client.Services.IServices;
+﻿using ContactsManager.Client.Auth;
+using ContactsManager.Client.Services.IServices;
 using ContactsManager.Shared.DTOs;
 using System.Net.Http.Json;
 
@@ -7,9 +8,11 @@ namespace ContactsManager.Client.Services;
 public class ContactService : IContactService
 {
     private readonly HttpClient _httpClient;
-    public ContactService(HttpClient httpClient)
+    private readonly JwtAuthenticationStateProvider _authState;
+    public ContactService(HttpClient httpClient, JwtAuthenticationStateProvider authState)
     {
         _httpClient = httpClient;
+        _authState = authState;
     }
 
     public async Task<IReadOnlyList<ContactPublicDTO>> GetAllContactsAsync()
@@ -36,7 +39,7 @@ public class ContactService : IContactService
 
     private async Task<bool> IsLoggedInAsync()
     {
-        return await Task.FromResult(false);
-        // auth function here
+        var state = await _authState.GetAuthenticationStateAsync();
+        return state.User.Identity?.IsAuthenticated == true;
     }
 }

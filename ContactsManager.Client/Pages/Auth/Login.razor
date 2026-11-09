@@ -1,7 +1,69 @@
 ﻿@page "/login"
+@using ContactsManager.Client.Services.IServices
+@inject IAuthService Auth
+@inject NavigationManager Nav
 
-<h3>Login</h3>
+<PageTitle>Logowanie</PageTitle>
+
+<div class="card login-card shadow-sm border-0">
+    <div class="card-body p-4 p-md-5">
+        <h1 class="h3 text-center mb-4 login-title">Logowanie</h1>
+
+        <EditForm Model="model" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <InputText id="email" class="form-control" @bind-Value="model.Email" />
+                <ValidationMessage For="() => model.Email" class="text-danger small" />
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Hasło</label>
+                <InputText id="password" type="password" class="form-control" @bind-Value="model.Password" />
+                <ValidationMessage For="() => model.Password" class="text-danger small" />
+            </div>
+
+            @if (error)
+            {
+                <div class="alert alert-danger py-2" role="alert">
+                    Nieprawidłowy email lub hasło.
+                </div>
+            }
+
+            <button type="submit" class="btn btn-accent w-100" disabled="@isBusy">
+                @if (isBusy)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                }
+                Zaloguj się
+            </button>
+        </EditForm>
+    </div>
+</div>
 
 @code {
+    private LoginRequestDTO model = new();
+    private bool error;
+    private bool isBusy;
 
+    private async Task HandleLogin()
+    {
+        isBusy = true;
+        error = false;
+
+        try
+        {
+            error = !await Auth.LoginAsync(model);
+        }
+        catch (HttpRequestException)
+        {
+            error = true;
+        }
+
+        isBusy = false;
+
+        if (!error)
+            Nav.NavigateTo("/");
+    }
 }

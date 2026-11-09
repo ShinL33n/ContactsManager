@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ContactsManager.Api.Controllers;
 
 [ApiController] [Route("api/[controller]")] [Authorize]
-public class ContactsController : Controller
+public class ContactsController : ControllerBase
 {
     private readonly IUserService _userService;
 
