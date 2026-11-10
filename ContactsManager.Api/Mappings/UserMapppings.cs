@@ -6,7 +6,7 @@ namespace ContactsManager.Api.Mappings;
 /// <summary>
 /// Provides extension methods for mapping user entities to contact DTOs.
 /// </summary>
-public static class ContactMapppings
+public static class UserMapppings
 {
     public static ContactPublicDTO ToContactPublicDTO(this User user)
     {

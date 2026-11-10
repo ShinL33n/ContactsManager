@@ -1,4 +1,4 @@
-﻿using ContactsManager.Api.Data;
+﻿using ContactsManager.Api.Mappings;
 using ContactsManager.Api.Models;
 using ContactsManager.Api.Services;
 using ContactsManager.Api.Services.IServices;
@@ -6,7 +6,6 @@ using ContactsManager.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace ContactsManager.Api.Controllers;
 
@@ -30,20 +29,70 @@ public class AuthController : ControllerBase
     [HttpPost("login")] [AllowAnonymous]
     public async Task<ActionResult<LoginResponseDTO>> Login(LoginRequestDTO loginRequest)
     {
-        var user = await _userService.GetUserByEmailAsync(loginRequest.Email);
-
-        if(user == null)
+        try
         {
-            return Unauthorized("Invalid email or password.");
+            if (ModelState.IsValid)
+            {
+                var user = await _userService.GetUserByEmailAsync(loginRequest.Email);
+
+                if (user == null)
+                {
+                    return Unauthorized("Invalid email or password.");
+                }
+
+                var isPasswordValid = _hasher.VerifyHashedPassword(user, user.PasswordHash, loginRequest.Password) != PasswordVerificationResult.Failed;
+
+                if (!isPasswordValid)
+                {
+                    return Unauthorized("Invalid email or password.");
+                }
+
+                return Ok(_jwtToken.CreateToken(user));
+            }
+            else
+            {
+                return BadRequest("Invalid request data.");
+            }
         }
-
-        var isPasswordValid = _hasher.VerifyHashedPassword(user, user.PasswordHash, loginRequest.Password) != PasswordVerificationResult.Failed;
-
-        if(!isPasswordValid)
+        catch (Exception )
         {
-            return Unauthorized("Invalid email or password.");
+            return StatusCode(500, "An error occurred.");
         }
+    }
 
-        return Ok(_jwtToken.CreateToken(user));
+    [HttpPost("register")] [AllowAnonymous]
+    public async Task<ActionResult> Register(RegisterRequestDTO registerRequest)
+    {
+        try
+        {
+            if (ModelState.IsValid)
+            {
+                var existingUser = await _userService.GetUserByEmailAsync(registerRequest.Email);
+                if (existingUser != null)
+                {
+                    return BadRequest("Email is already in use.");
+                }
+
+                User newUser = registerRequest.ToUser();
+
+                newUser.PasswordHash = _hasher.HashPassword(newUser, registerRequest.Password);
+
+                var created = await _userService.CreateUserAsync(newUser);
+                if (!created)
+                {
+                    return StatusCode(500, "An error occurred while creating the user.");
+                }
+
+                return Ok(_jwtToken.CreateToken(newUser));
+            }
+            else
+            {
+                return BadRequest("Invalid request data.");
+            }
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "An error occurred.");
+        }
     }
 }

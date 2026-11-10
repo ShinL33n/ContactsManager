@@ -38,6 +38,10 @@ public class MockUserService : IUserService
     private static readonly Guid EducationMaster = Guid.Parse("66666666-6666-6666-6666-666666666666");
     private static readonly Guid EducationDoctorate = Guid.Parse("66666666-6666-6666-6666-666666666667");
 
+    // Passwords
+    private static readonly string userPassHash = "AQAAAAIAAYagAAAAEGzAAReeGaf3kMwmtIasd/lp0Ihh1p+k0kg02G7tr/388Kpg6MEU3/KbuWVAurBSEw=="; //Password: User123!
+    private static readonly string adminPassHash = "AQAAAAIAAYagAAAAEPKThCcAvFAmMa+2i4fFyIJBH+5U3k2mShq4CE+4Etod65qjs7g5Tod1YKCqx4Pg2g=="; //Password: Admin123!
+
 
     private readonly List<User> users;
     private readonly List<Category> categories;
@@ -154,7 +158,7 @@ public class MockUserService : IUserService
                 FirstName = "Adam",
                 LastName = "Kowalski",
                 Email = "adam@example.com",
-                PasswordHash = "AQAAAAIAAYagAAAAEGzAAReeGaf3kMwmtIasd/lp0Ihh1p+k0kg02G7tr/388Kpg6MEU3/KbuWVAurBSEw==", //Password: User123!
+                PasswordHash = userPassHash,
                 Role = RoleNames.UserRole,
                 PhoneNumber = "123456789",
                 Birthday = new DateOnly(1990, 1, 12),
@@ -177,7 +181,7 @@ public class MockUserService : IUserService
                 FirstName = "Jerzy",
                 LastName = "Lewandowski",
                 Email = "jerzy@example.com",
-                PasswordHash = "passwordToHashInFuture-Jerzy",
+                PasswordHash = userPassHash,
                 Role = RoleNames.UserRole,
                 PhoneNumber = "324934123",
                 Birthday = new DateOnly(1999, 2, 10),
@@ -200,7 +204,7 @@ public class MockUserService : IUserService
                 FirstName = "Alicja",
                 LastName = "Adamczyk",
                 Email = "alicja@example.com",
-                PasswordHash = "passwordToHashInFuture-Alicja",
+                PasswordHash = userPassHash,
                 Role = RoleNames.UserRole,
                 PhoneNumber = "890123657",
                 Birthday = new DateOnly(1996, 5, 24),
@@ -223,7 +227,7 @@ public class MockUserService : IUserService
                 FirstName = "Adrian",
                 LastName = "Kisieliński",
                 Email = "adrian@example.com",
-                PasswordHash = "AQAAAAIAAYagAAAAEPKThCcAvFAmMa+2i4fFyIJBH+5U3k2mShq4CE+4Etod65qjs7g5Tod1YKCqx4Pg2g==", // Password: Admin123!
+                PasswordHash = adminPassHash,
                 Role = RoleNames.AdminRole,
                 PhoneNumber = "123123123",
                 Birthday = new DateOnly(2002, 10, 6),
@@ -247,7 +251,6 @@ public class MockUserService : IUserService
     {
         if (user != null)
         {
-            user.Id = Guid.NewGuid();
             users.Add(user);
             return await Task.FromResult(true);
         }
