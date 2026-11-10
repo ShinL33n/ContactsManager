@@ -4,10 +4,10 @@ namespace ContactsManager.Shared.DTOs;
 
 public class RegisterRequestDTO
 {
-    [Required]
+    [Required(ErrorMessage = "Imię jest wymagane.")]
     public string FirstName { get; set; } = "";
 
-    [Required]
+    [Required(ErrorMessage = "Nazwisko jest wymagane.")]
     public string LastName { get; set; } = "";
 
     [Required]

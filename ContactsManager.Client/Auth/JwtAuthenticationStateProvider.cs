@@ -21,19 +21,48 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         var token = await _js.InvokeAsync<string?>("localStorage.getItem", AuthService.TokenKey);
-        if (string.IsNullOrEmpty(token))
+        if (string.IsNullOrWhiteSpace(token))
+        {
             return Anonymous;
+        }
 
-        var values = ReadPayload(token);
+        try
+        {
+            var values = ReadPayload(token);
 
-        // "exp" is a Unix timestamp in seconds; an expired token means not logged in
-        if (values.TryGetValue("exp", out var exp) &&
-            DateTimeOffset.FromUnixTimeSeconds(exp.GetInt64()) < DateTimeOffset.UtcNow)
+            // "exp" is a Unix timestamp in seconds; an expired token means not logged in.
+            if (values.TryGetValue("exp", out var exp) &&
+                exp.ValueKind == JsonValueKind.Number &&
+                DateTimeOffset.FromUnixTimeSeconds(exp.GetInt64()) < DateTimeOffset.UtcNow)
+            {
+                await RemoveInvalidTokenAsync();
+                return Anonymous;
+            }
+
+            var claims = values.Select(kv => new Claim(kv.Key, kv.Value.ToString()));
+            var identity = new ClaimsIdentity(claims, "jwt", ClaimTypes.Email, ClaimTypes.Role);
+            return new AuthenticationState(new ClaimsPrincipal(identity));
+        }
+        catch (FormatException)
+        {
+            await RemoveInvalidTokenAsync();
             return Anonymous;
-
-        var claims = values.Select(kv => new Claim(kv.Key, kv.Value.ToString()));
-        var identity = new ClaimsIdentity(claims, "jwt", ClaimTypes.Email, ClaimTypes.Role);
-        return new AuthenticationState(new ClaimsPrincipal(identity));
+        }
+        catch (JsonException)
+        {
+            await RemoveInvalidTokenAsync();
+            return Anonymous;
+        }
+        catch (IndexOutOfRangeException)
+        {
+            await RemoveInvalidTokenAsync();
+            return Anonymous;
+        }
+        catch (InvalidOperationException)
+        {
+            await RemoveInvalidTokenAsync();
+            return Anonymous;
+        }
     }
 
     /// <summary>
@@ -42,12 +71,24 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
     public void NotifyStateChanged()
         => NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
 
-    // The payload is the middle part of the token, Base64Url encoded JSON
+    private async Task RemoveInvalidTokenAsync()
+    {
+        await _js.InvokeVoidAsync("localStorage.removeItem", AuthService.TokenKey);
+    }
+
+    // The payload is the middle part of the token, Base64Url encoded JSON.
     private static Dictionary<string, JsonElement> ReadPayload(string jwt)
     {
-        var payload = jwt.Split('.')[1].Replace('-', '+').Replace('_', '/');
+        var parts = jwt.Split('.');
+        if (parts.Length != 3)
+        {
+            throw new FormatException("The stored token is not a JWT.");
+        }
+
+        var payload = parts[1].Replace('-', '+').Replace('_', '/');
         payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
-        return JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(Convert.FromBase64String(payload))!;
+        return JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(Convert.FromBase64String(payload))
+            ?? throw new JsonException("The JWT payload is empty.");
     }
 }
 

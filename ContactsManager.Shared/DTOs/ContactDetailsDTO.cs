@@ -10,7 +10,12 @@ namespace ContactsManager.Shared.DTOs;
 /// </remarks>
 public class ContactDetailsDTO : ContactPublicDTO
 {
-    public DateOnly? Birthday { get; set; }
+    public Guid CategoryId { get; set; }
+    public Guid? SubcategoryId { get; set; }
+    public Guid? CustomSubcategoryId { get; set; }
+    public Guid? EducationId { get; set; }
+
+    public DateOnly? Birthday { get; set;}
 
     public string? Address { get; set; } = null;
 

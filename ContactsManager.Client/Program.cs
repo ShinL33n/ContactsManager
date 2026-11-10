@@ -22,6 +22,10 @@ builder.Services.AddHttpClient<IContactService, ContactService>(client =>
         client.BaseAddress = new Uri(apiBaseUrl))
     .AddHttpMessageHandler<AuthTokenHandler>();
 
+builder.Services.AddHttpClient<ICatalogService, CatalogService>(client =>
+        client.BaseAddress = new Uri(apiBaseUrl))
+    .AddHttpMessageHandler<AuthTokenHandler>();
+
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<JwtAuthenticationStateProvider>();

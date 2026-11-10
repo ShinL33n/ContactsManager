@@ -11,6 +11,10 @@
 {
 	<p>Ładowanie...</p>
 }
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+	<div class="alert alert-danger">@errorMessage</div>
+}
 else if(contacts == null || contacts.Count == 0)
 {
 	<h3 class="pb-2">Brak kontaktów</h3>
@@ -28,11 +32,22 @@ else
 @code {
 	private IReadOnlyList<ContactPublicDTO> contacts = [];
 	private bool isLoading = true;
+	private string? errorMessage;
 
 	protected override async Task OnInitializedAsync()
 	{
-		contacts = await ContactService.GetAllContactsAsync();
-		isLoading = false;
+		try
+		{
+			contacts = await ContactService.GetAllContactsAsync();
+		}
+		catch (HttpRequestException)
+		{
+			errorMessage = "Nie udało się połączyć z API.";
+		}
+		finally
+		{
+			isLoading = false;
+		}
 	}
 }
 

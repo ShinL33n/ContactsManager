@@ -1,5 +1,6 @@
 ﻿using ContactsManager.Api.Models;
 using ContactsManager.Shared.DTOs;
+using ContactsManager.Shared.Utils;
 
 namespace ContactsManager.Api.Mappings;
 
@@ -23,9 +24,10 @@ public static class ContactMappings
             SubcategoryId = contactCreateDTO.SubcategoryId,
             CustomSubcategoryId = contactCreateDTO.CustomSubcategoryId,
             EducationId = contactCreateDTO.EducationId,
+            Role = RoleNames.UserRole,
 
-            // tmp solution, just to compile
-            Category = new Category { Id = contactCreateDTO.CategoryId },
+            // The service validates and loads the category by its foreign key.
+            Category = null!,
         };
     }
 
@@ -33,7 +35,7 @@ public static class ContactMappings
     {
         return new User
         {
-            // Id stays the same
+            Id = contactUpdateDTO.Id,
             FirstName = contactUpdateDTO.FirstName,
             LastName = contactUpdateDTO.LastName,
             Email = contactUpdateDTO.Email,
@@ -48,8 +50,8 @@ public static class ContactMappings
             CustomSubcategoryId = contactUpdateDTO.CustomSubcategoryId,
             EducationId = contactUpdateDTO.EducationId,
 
-            // tmp solution, just to compile
-            Category = new Category { Id = contactUpdateDTO.CategoryId },
+            // The service resolves the real category and related dictionary entities.
+            Category = null!,
         };
     }
 
@@ -62,9 +64,8 @@ public static class ContactMappings
             LastName = registerRequestDTO.LastName,
             Email = registerRequestDTO.Email,
 
-            // tmp solution, just to compile
-            CategoryId = Guid.Parse("22222222-2222-2222-2222-222222222222"), // default category - private
-            Category = new Category { Id = Guid.Parse("22222222-2222-2222-2222-222222222222") },
+            // The service assigns the database category marked as private.
+            Category = null!,
         };
     }
 }

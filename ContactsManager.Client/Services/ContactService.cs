@@ -37,6 +37,46 @@ public class ContactService : IContactService
         return await _httpClient.GetFromJsonAsync<ContactPublicDTO>($"api/contacts/{id}") ?? null;
     }
 
+    public async Task<ContactDetailsDTO?> GetEditableContactAsync(Guid id)
+    {
+        return await _httpClient.GetFromJsonAsync<ContactDetailsDTO>($"api/contacts/{id}/full");
+    }
+
+    public async Task<ContactDetailsDTO> CreateContactAsync(ContactCreateDTO contact)
+    {
+        using var response = await _httpClient.PostAsJsonAsync("api/contacts", contact);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadFromJsonAsync<ContactDetailsDTO>()
+            ?? throw new InvalidOperationException("The API returned no created contact.");
+    }
+
+    public async Task<ContactDetailsDTO> UpdateContactAsync(ContactUpdateDTO contact)
+    {
+        using var response = await _httpClient.PutAsJsonAsync("api/contacts", contact);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadFromJsonAsync<ContactDetailsDTO>()
+            ?? throw new InvalidOperationException("The API returned no updated contact.");
+    }
+
+    public async Task DeleteContactAsync(Guid id)
+    {
+        using var response = await _httpClient.DeleteAsync($"api/contacts/{id}/delete");
+        response.EnsureSuccessStatusCode();
+    }
+
+    private static async Task EnsureSuccessAsync(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+        {
+            return;
+        }
+
+        var message = await response.Content.ReadAsStringAsync();
+        throw new HttpRequestException(string.IsNullOrWhiteSpace(message)
+            ? $"API returned status {(int)response.StatusCode}."
+            : message);
+    }
+
     private async Task<bool> IsLoggedInAsync()
     {
         var state = await _authState.GetAuthenticationStateAsync();

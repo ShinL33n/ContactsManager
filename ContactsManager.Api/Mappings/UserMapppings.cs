@@ -37,6 +37,10 @@ public static class UserMapppings
             SubcategoryName = user.Subcategory?.Name,
             CustomSubcategoryName = user.CustomSubcategory?.Name,
             Age = user.Age,
+            CategoryId = user.CategoryId,
+            SubcategoryId = user.SubcategoryId,
+            CustomSubcategoryId = user.CustomSubcategoryId,
+            EducationId = user.EducationId,
 
             Birthday = user.Birthday,
             Address = user.Address,

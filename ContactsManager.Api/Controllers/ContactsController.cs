@@ -4,7 +4,9 @@ using ContactsManager.Api.Services.IServices;
 using ContactsManager.Shared.DTOs;
 using ContactsManager.Shared.Utils;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ContactsManager.Api.Controllers;
 
@@ -12,10 +14,12 @@ namespace ContactsManager.Api.Controllers;
 public class ContactsController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IPasswordHasher<User> _passwordHasher;
 
-    public ContactsController(IUserService userService)
+    public ContactsController(IUserService userService, IPasswordHasher<User> passwordHasher)
     {
         _userService = userService;
+        _passwordHasher = passwordHasher;
     }
 
     [HttpGet] [AllowAnonymous]
@@ -24,7 +28,7 @@ public class ContactsController : ControllerBase
         IEnumerable<User> users = await _userService.GetAllUsersAsync();
 
         List<ContactPublicDTO> contacts = new();
-        // if(not anonymus) return ContactPublicDetailsDto
+
         foreach (var user in users)
         {
             contacts.Add(user.ToContactPublicDTO());
@@ -39,7 +43,7 @@ public class ContactsController : ControllerBase
         IEnumerable<User> users = await _userService.GetAllUsersAsync();
 
         List<ContactDetailsDTO> contacts = new();
-        // if(not anonymus) return ContactPublicDetailsDto
+
         foreach (var user in users)
         {
             contacts.Add(user.ToContactDetailsDTO());
@@ -78,96 +82,90 @@ public class ContactsController : ControllerBase
         return Ok(contact);
     }
 
-    //[HttpPost("create")]
+
     [HttpPost]
     [Authorize(Roles = RoleNames.AdminRole)]
     public async Task<ActionResult<ContactDetailsDTO>> CreateAsync(ContactCreateDTO contactCreateDto)
     {
-        // TO-DO: Add CustomSubcategory handling
-        try
+        if (!ModelState.IsValid)
         {
-            if (ModelState.IsValid)
-            {
-                User newUser = contactCreateDto.ToUser();
-                bool createdSuccessfully = await _userService.CreateUserAsync(newUser);
-
-                if (!createdSuccessfully)
-                {
-                    return BadRequest();
-                }
-
-                ContactDetailsDTO contactDetailsDto = newUser.ToContactDetailsDTO();
-
-                return CreatedAtAction(nameof(GetByIdAsync), new { id = newUser.Id }, contactDetailsDto);
-            }
-            else
-            {
-                return BadRequest(ModelState);
-            }
+            return ValidationProblem(ModelState);
         }
-        catch (Exception)
+
+        User newUser = contactCreateDto.ToUser();
+        newUser.PasswordHash = _passwordHasher.HashPassword(newUser, contactCreateDto.Password);
+        bool createdSuccessfully = await _userService.CreateUserAsync(newUser, contactCreateDto.CustomSubcategoryName);
+
+        if (!createdSuccessfully)
         {
-            return BadRequest();
+            return BadRequest("Email nie jest dostępny lub wybrana podkategoria jest nieprawidłowa.");
         }
+
+        var savedUser = await _userService.GetUserByIdAsync(newUser.Id);
+        if (savedUser == null)
+        {
+            return Problem("Kontakt został utworzony, ale nie mógł zostać załadowany.");
+        }
+
+        return Created($"/api/contacts/{savedUser.Id}/full", savedUser.ToContactDetailsDTO());
     }
 
-    //[HttpPut("update")]
+
     [HttpPut]
     public async Task<ActionResult<ContactDetailsDTO>> UpdateAsync(ContactUpdateDTO contactUpdateDTO)
     {
-        // TO-DO: Add CustomSubcategory handling
-        try
+        if (!IsAdmin() && !IsCurrentUser(contactUpdateDTO.Id))
         {
-            if (ModelState.IsValid)
-            {
-                User updatedUser = contactUpdateDTO.ToUser();
-                bool updatedSuccessfully = await _userService.UpdateUserAsync(updatedUser);
-
-                if (!updatedSuccessfully)
-                {
-                    return BadRequest();
-                }
-
-                ContactDetailsDTO contactDetailsDto = updatedUser.ToContactDetailsDTO();
-
-                return Ok(contactDetailsDto);
-            }
-            else
-            {
-                return BadRequest(ModelState);
-            }
+            return Forbid();
         }
-        catch (Exception)
+
+        if (!ModelState.IsValid)
         {
-            return BadRequest();
+            return ValidationProblem(ModelState);
         }
+
+        User updatedUser = contactUpdateDTO.ToUser();
+        if (!string.IsNullOrWhiteSpace(contactUpdateDTO.Password))
+        {
+            updatedUser.PasswordHash = _passwordHasher.HashPassword(updatedUser, contactUpdateDTO.Password);
+        }
+
+        bool updatedSuccessfully = await _userService.UpdateUserAsync(updatedUser, contactUpdateDTO.CustomSubcategoryName);
+        if (!updatedSuccessfully)
+        {
+            return BadRequest("Kontakt nie istnieje, email jest już w użyciu lub wybrana wartość słownikowa jest nieprawidłowa.");
+        }
+
+        var savedUser = await _userService.GetUserByIdAsync(updatedUser.Id);
+        if (savedUser == null)
+        {
+            return Problem("Kontakt został zaktualizowany, ale nie mógł zostać załadowany.");
+        }
+
+        return Ok(savedUser.ToContactDetailsDTO());
     }
 
     [HttpDelete("{id:guid}/delete")]
     [Authorize(Roles = RoleNames.AdminRole)]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
-        try
+        if (!ModelState.IsValid)
         {
-            if (ModelState.IsValid)
-            {
-                bool deletedSuccessfully = await _userService.DeleteUserAsync(id);
-
-                if (!deletedSuccessfully)
-                {
-                    return NotFound();
-                }
-
-                return NoContent();
-            }
-            else
-            {
-                return BadRequest(ModelState);  
-            }
+            return ValidationProblem(ModelState);
         }
-        catch (Exception)
-        {
-            return BadRequest();
-        }
+
+        bool deletedSuccessfully = await _userService.DeleteUserAsync(id);
+        return deletedSuccessfully ? NoContent() : NotFound();
+    }
+
+    private bool IsAdmin()
+    {
+        return User.IsInRole(RoleNames.AdminRole);
+    }
+
+    private bool IsCurrentUser(Guid id)
+    {
+        return Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var currentUserId)
+            && currentUserId == id;
     }
 }

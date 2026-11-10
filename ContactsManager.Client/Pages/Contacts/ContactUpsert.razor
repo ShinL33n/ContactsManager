@@ -1,34 +1,141 @@
-﻿@page "/upsert/{Id:guid}"
-@using ContactsManager.Client.Services
-@using ContactsManager.Client.Services.IServices
+﻿@page "/upsert"
+@page "/upsert/{Id:guid}"
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
+@using ContactsManager.Client.Models
+@using ContactsManager.Shared.Enums
+@using ContactsManager.Shared.Utils
 @inject IContactService ContactService
+@inject ICatalogService CatalogService
 @inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-<h3>ContactUpsert</h3>
+<PageTitle>@(IsEditMode ? "Edycja kontaktu" : "Nowy kontakt")</PageTitle>
 
-<PageTitle>Edytuj/utwórz kontakt</PageTitle>
+<a href="@(IsEditMode ? $"/contact/{Id}" : "/")" class="btn btn-sm btn-outline-accent mb-3">&larr; Wróć</a>
+<h1 class="fw-bolder pb-2">@(IsEditMode ? "Edytuj kontakt" : "Dodaj kontakt")</h1>
 
-<a href="/contact/@Id" class="btn btn-sm btn-outline-accent mb-3">&larr; Wróć do szczegółów</a>
+@if (isLoading)
+{
+    <p>Ładowanie formularza...</p>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+else
+{
+    <EditForm Model="model" OnValidSubmit="SaveAsync" autocomplete="off">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-<h1 class="fw-bolder pb-2">Edytuj/utórz kontakt:</h1>
+        <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">Imię</label><InputText autocomplete="off" class="form-control" @bind-Value="model.FirstName" /><ValidationMessage For="@(() => model.FirstName)" /></div>
+            <div class="col-md-6"><label class="form-label">Nazwisko</label><InputText autocomplete="off" class="form-control" @bind-Value="model.LastName" /><ValidationMessage For="@(() => model.LastName)" /></div>
+            <div class="col-md-6"><label class="form-label">Email</label><InputText type="email" autocomplete="off" class="form-control" @bind-Value="model.Email" /><ValidationMessage For="@(() => model.Email)" /></div>
+            <div class="col-md-6"><label class="form-label">Telefon</label><InputText class="form-control" @bind-Value="model.PhoneNumber" /></div>
+            <div class="col-md-6"><label class="form-label">Data urodzenia</label><InputDate class="form-control" @bind-Value="model.Birthday" /></div>
+            <div class="col-md-6"><label class="form-label">Wykształcenie</label><InputSelect class="form-select" @bind-Value="model.EducationId"><option value="">-- wybierz --</option>@foreach (var item in options.Educations) { <option value="@item.Id">@item.Name</option> }</InputSelect></div>
+            <div class="col-md-6"><label class="form-label">Kategoria</label><InputSelect class="form-select" @bind-Value="model.CategoryId" @bind-Value:after="CategoryChanged"><option value="@Guid.Empty">-- wybierz --</option>@foreach (var item in options.Categories) { <option value="@item.Id">@item.Name</option> }</InputSelect><ValidationMessage For="@(() => model.CategoryId)" /></div>
 
-<_ContactForm contact="contact" />
+            @if (SelectedCategory?.SubcategoryMode == SubcategoryMode.Dictionary)
+            {
+                <div class="col-md-6"><label class="form-label">Podkategoria</label><InputSelect class="form-select" @bind-Value="model.SubcategoryId"><option value="">-- wybierz --</option>@foreach (var item in options.Subcategories) { <option value="@item.Id">@item.Name</option> }</InputSelect></div>
+            }
+            else if (SelectedCategory?.SubcategoryMode == SubcategoryMode.Custom)
+            {
+                <div class="col-md-6"><label class="form-label">Własna podkategoria</label><InputText class="form-control" @bind-Value="model.CustomSubcategoryName" /></div>
+            }
+
+            <div class="col-md-6"><label class="form-label">Stanowisko</label><InputText class="form-control" @bind-Value="model.JobTitle" /></div>
+            <div class="col-12"><label class="form-label">Adres</label><InputText class="form-control" @bind-Value="model.Address" /></div>
+            <div class="col-12"><label class="form-label">Notatki</label><InputTextArea class="form-control" @bind-Value="model.Notes" /></div>
+            <div class="col-md-6"><label class="form-label">@(IsEditMode ? "Nowe hasło (opcjonalne)" : "Hasło")</label><InputText type="password" autocomplete="new-password" class="form-control" @bind-Value="model.Password" /><ValidationMessage For="@(() => model.Password)" /></div>
+            <div class="col-md-6"><label class="form-label">Potwierdzenie hasła</label><InputText type="password" autocomplete="new-password" class="form-control" @bind-Value="model.ConfirmPassword" /><ValidationMessage For="@(() => model.ConfirmPassword)" /></div>
+        </div>
+
+        <button class="btn btn-accent mt-4" type="submit" disabled="@isSaving">@(isSaving ? "Zapisywanie..." : "Zapisz")</button>
+    </EditForm>
+}
 
 @code {
-    [Parameter]
-    public Guid Id { get; set; }
+    [Parameter] public Guid Id { get; set; }
 
-    [Parameter]
-    public ContactPublicDTO? contact { get; set; } = null;
-
-    // TO-DO: dto for update/create contact
+    private ContactFormModel model = new();
+    private ContactFormOptionsDTO options = new();
+    private bool isLoading = true;
+    private bool isSaving;
+    private bool IsEditMode => Id != Guid.Empty;
+    private string? errorMessage;
+    private CategoryOptionDTO? SelectedCategory => options.Categories.FirstOrDefault(item => item.Id == model.CategoryId);
 
     protected override async Task OnInitializedAsync()
     {
-        contact = await ContactService.GetContactDetailsByIdAsync(Id);
-        if (contact == null)
+        try
         {
-            Navigation.NotFound();
+            var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            if (!IsEditMode && !authenticationState.User.IsInRole(RoleNames.AdminRole))
+            {
+                Navigation.NavigateTo("/");
+                return;
+            }
+
+            options = await CatalogService.GetContactFormOptionsAsync();
+            if (!IsEditMode)
+            {
+                model.CategoryId = options.Categories
+                    .FirstOrDefault(category => category.Name == CategoryNames.Private)?.Id ?? Guid.Empty;
+            }
+
+            if (IsEditMode)
+            {
+                var contact = await ContactService.GetEditableContactAsync(Id);
+                if (contact is null) { Navigation.NavigateTo("/not-found"); return; }
+                model = ContactFormModel.FromContact(contact);
+            }
+
+            UpdateSubcategoryMode();
+        }
+        catch (Exception)
+        {
+            errorMessage = $"Nie udało się załadować formularza.";
+        }
+        finally
+        { 
+            isLoading = false; 
+        }
+    }
+
+    private void CategoryChanged()
+    {
+        UpdateSubcategoryMode();
+        model.SubcategoryId = null;
+        model.CustomSubcategoryId = null;
+        model.CustomSubcategoryName = null;
+    }
+
+    private void UpdateSubcategoryMode()
+    {
+        model.SelectedSubcategoryMode = SelectedCategory?.SubcategoryMode ?? SubcategoryMode.None;
+    }
+
+    private async Task SaveAsync()
+    {
+        isSaving = true;
+        errorMessage = null;
+        try
+        {
+            if (IsEditMode) await ContactService.UpdateContactAsync(model.ToUpdateDto());
+            else await ContactService.CreateContactAsync(model.ToCreateDto());
+            Navigation.NavigateTo(IsEditMode ? $"/contact/{Id}" : "/");
+        }
+        catch (HttpRequestException)
+        { 
+            errorMessage = $"Nie udało się zapisać kontaktu."; 
+        }
+        finally 
+        { 
+            isSaving = false; 
         }
     }
 }

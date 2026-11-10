@@ -11,6 +11,11 @@
 
 <h1 class="fw-bolder pb-2">Szczegóły kontaktu:</h1>
 
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
 @if(Contact != null)
 {
     <div class="card details-card shadow-sm mb-3">
@@ -129,7 +134,7 @@
                 <h2 class="section-title mb-3">Kategoria</h2>
                 <dl class="row mb-0">
                     <dt class="col-sm-4">Kategoria</dt>
-                    <dd class="col-sm-8">Służbowy</dd>
+                    <dd class="col-sm-8">@Contact.CategoryName</dd>
 
                     <dt class="col-sm-4">Podkategoria</dt>
                     @if (Contact.CategoryName == CategoryNames.Business)
@@ -162,7 +167,9 @@
 
         <footer class="card-footer bg-transparent d-flex justify-content-end gap-2 p-3">
             <AuthorizeView Roles="@RoleNames.AdminRole">
-                <button type="button" class="btn btn-outline-danger" @onclick="DeleteAsync">Usuń</button>
+                <Authorized>
+                    <button type="button" class="btn btn-outline-danger" @onclick="DeleteAsync">Usuń</button>
+                </Authorized>
             </AuthorizeView>
 
             <AuthorizeView>
@@ -170,7 +177,7 @@
                     @if (context.User.IsInRole(RoleNames.AdminRole) ||
                          context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value == Contact.Id.ToString())
                     {
-                        <a href="contact/@Contact.Id/edit" class="btn btn-accent">Edytuj</a>
+                        <a href="/upsert/@Contact.Id" class="btn btn-accent">Edytuj</a>
                     }
                     else
                     {
@@ -204,10 +211,19 @@
         }
     }
 
-    private Task DeleteAsync()
+    private string? errorMessage;
+
+    private async Task DeleteAsync()
     {
-        // TO-DO: call the delete endpoint
-        return Task.CompletedTask;
+        try
+        {
+            await ContactService.DeleteContactAsync(Id);
+            Navigation.NavigateTo("/");
+        }
+        catch (HttpRequestException)
+        {
+            errorMessage = $"Nie udało się usunąć kontaktu.";
+        }
     }
 
     private char NotProvidedChar() => '—';

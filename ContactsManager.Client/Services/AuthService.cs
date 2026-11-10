@@ -14,6 +14,8 @@ public class AuthService : IAuthService
     private readonly IJSRuntime _js;
     private readonly JwtAuthenticationStateProvider _authState;
 
+    public string? LastError { get; private set; }
+
     public AuthService(HttpClient http, IJSRuntime js, JwtAuthenticationStateProvider authState)
     {
         _http = http;
@@ -35,6 +37,32 @@ public class AuthService : IAuthService
 
         var result = await response.Content.ReadFromJsonAsync<LoginResponseDTO>();
         await _js.InvokeVoidAsync("localStorage.setItem", TokenKey, result!.Token);
+        _authState.NotifyStateChanged();
+        return true;
+    }
+
+    /// <summary>
+    /// Registers a new user account.
+    /// </summary>
+    /// <param name="model">The registration details.</param>
+    /// <returns>true if registration succeeds; otherwise, false.</returns>
+    public async Task<bool> RegisterAsync(RegisterRequestDTO model)
+    {
+        LastError = null;
+        var response = await _http.PostAsJsonAsync("api/auth/register", model);
+        if (!response.IsSuccessStatusCode)
+        {
+            LastError = await response.Content.ReadAsStringAsync();
+            return false;
+        }
+
+        var result = await response.Content.ReadFromJsonAsync<LoginResponseDTO>();
+        if (result is null)
+        {
+            return false;
+        }
+
+        await _js.InvokeVoidAsync("localStorage.setItem", TokenKey, result.Token);
         _authState.NotifyStateChanged();
         return true;
     }

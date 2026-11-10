@@ -1,4 +1,6 @@
 ﻿@page "/register"
+@inject IAuthService Auth
+@inject NavigationManager Nav
 
 <PageTitle>Rejestracja</PageTitle>
 
@@ -10,6 +12,18 @@
             <DataAnnotationsValidator />
 
             <div class="mb-3">
+                <label for="firstName" class="form-label">Imię</label>
+                <InputText id="firstName" class="form-control" autocomplete="given-name" @bind-Value="model.FirstName" />
+                <ValidationMessage For="() => model.FirstName" class="text-danger small" />
+            </div>
+
+            <div class="mb-3">
+                <label for="lastName" class="form-label">Nazwisko</label>
+                <InputText id="lastName" class="form-control" autocomplete="family-name" @bind-Value="model.LastName" />
+                <ValidationMessage For="() => model.LastName" class="text-danger small" />
+            </div>
+
+            <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <InputText id="email" class="form-control" @bind-Value="model.Email" />
                 <ValidationMessage For="() => model.Email" class="text-danger small" />
@@ -17,15 +31,20 @@
 
             <div class="mb-3">
                 <label for="password" class="form-label">Hasło</label>
-                <InputText id="password" type="password" class="form-control" @bind-Value="model.Password" />
+                <InputText id="password" type="password" autocomplete="new-password" class="form-control" @bind-Value="model.Password" />
                 <ValidationMessage For="() => model.Password" class="text-danger small" />
             </div>
 
             <div class="mb-3">
                 <label for="confirmPassword" class="form-label">Potwierdź hasło</label>
-                <InputText id="confirmPassword" type="password" class="form-control" @bind-Value="model.ConfirmPassword" />
+                <InputText id="confirmPassword" type="password" autocomplete="new-password" class="form-control" @bind-Value="model.ConfirmPassword" />
                 <ValidationMessage For="() => model.ConfirmPassword" class="text-danger small" />
             </div>
+
+            @if (error)
+            {
+                <div class="alert alert-danger py-2" role="alert">@errorMessage</div>
+            }
 
             <button type="submit" class="btn btn-accent w-100" disabled="@isBusy">
                 @if (isBusy)
@@ -40,11 +59,33 @@
 
 @code {
     private RegisterRequestDTO model = new();
-    //private bool error;
+    private bool error;
     private bool isBusy;
+    private string errorMessage = "Nie udało się utworzyć konta.";
 
     private async Task HandleRegister()
     {
-        
+        isBusy = true;
+        error = false;
+
+        try
+        {
+            error = !await Auth.RegisterAsync(model);
+            if (error && !string.IsNullOrWhiteSpace(Auth.LastError))
+            {
+                errorMessage = Auth.LastError.Trim('"');
+            }
+        }
+        catch (HttpRequestException)
+        {
+            error = true;
+            errorMessage = "Nie udało się połączyć z API.";
+        }
+
+        isBusy = false;
+        if (!error)
+        {
+            Nav.NavigateTo("/");
+        }
     }
 }

@@ -1,6 +1,4 @@
-﻿using ContactsManager.Shared.Utils;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace ContactsManager.Shared.DTOs;
 
@@ -26,6 +24,7 @@ public abstract class ContactUpsertBaseDTO
     public Guid CategoryId { get; set; }
     public Guid? SubcategoryId { get; set; }
     public Guid? CustomSubcategoryId { get; set; }
+    public string? CustomSubcategoryName { get; set; }
 
-    public Guid? EducationId { get; set; }
+    public Guid? EducationId { get; set;}
 }

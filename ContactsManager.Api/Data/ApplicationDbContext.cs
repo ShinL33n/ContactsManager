@@ -27,6 +27,12 @@ public class ApplicationDbContext : DbContext
 
         var adminPassword = _configuration["AdminPassword"]!;
 
+        // Users
+        var UserOne = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var UserTwo = Guid.Parse("00000000-0000-0000-0000-000000000002");
+        var UserThree = Guid.Parse("00000000-0000-0000-0000-000000000003");
+        var UserFour = Guid.Parse("00000000-0000-0000-0000-000000000004");
+
         // Categories
         var CategoryBusiness = Guid.Parse("11111111-1111-1111-1111-111111111111");
         var CategoryPrivate = Guid.Parse("22222222-2222-2222-2222-222222222222");
@@ -36,7 +42,7 @@ public class ApplicationDbContext : DbContext
         var SubcategoryBoss = Guid.Parse("44444444-4444-4444-4444-444444444441");
         var SubcategoryClient = Guid.Parse("44444444-4444-4444-4444-444444444442");
         var SubcategoryCoworker = Guid.Parse("44444444-4444-4444-4444-444444444443");
-        var SubcategoryHR = Guid.Parse("44444444-4444-4444-4444-444444444443");
+        var SubcategoryHR = Guid.Parse("44444444-4444-4444-4444-444444444444");
 
         // CustomSubcategories
         var CustomSubcategoryNeighbor = Guid.Parse("55555555-5555-5555-5555-555555555551");
@@ -51,8 +57,12 @@ public class ApplicationDbContext : DbContext
         var EducationMaster = Guid.Parse("66666666-6666-6666-6666-666666666666");
         var EducationDoctorate = Guid.Parse("66666666-6666-6666-6666-666666666667");
 
+        // Passwords
+        string userPassHash = "AQAAAAIAAYagAAAAEGzAAReeGaf3kMwmtIasd/lp0Ihh1p+k0kg02G7tr/388Kpg6MEU3/KbuWVAurBSEw=="; //Password: User123!
+        string adminPassHash = "AQAAAAIAAYagAAAAEPKThCcAvFAmMa+2i4fFyIJBH+5U3k2mShq4CE+4Etod65qjs7g5Tod1YKCqx4Pg2g=="; //Password: Admin123!
 
-        builder.Entity<Subcategory>().HasData(
+
+    builder.Entity<Subcategory>().HasData(
             new Subcategory
             {
                 Id = SubcategoryBoss,
@@ -99,11 +109,13 @@ public class ApplicationDbContext : DbContext
         builder.Entity<CustomSubcategory>().HasData(
             new CustomSubcategory
             {
+                Id = CustomSubcategoryNeighbor,
                 Name = "sąsiad",
             },
             new CustomSubcategory
             {
-                Name = "przysły pracownik"
+                Id = CustomSubcategoryEmployee,
+                Name = "przyszły pracownik"
             }
         );
 
@@ -148,10 +160,11 @@ public class ApplicationDbContext : DbContext
         builder.Entity<User>().HasData(
             new User
             {
+                Id = UserOne,
                 FirstName = "Adam",
                 LastName = "Kowalski",
                 Email = "adam@example.com",
-                PasswordHash = "passwordToHashInFuture-Adam",
+                PasswordHash = userPassHash,
                 Role = RoleNames.UserRole,
                 PhoneNumber = "123456789",
                 Birthday = new DateOnly(1990, 1, 12),
@@ -170,10 +183,11 @@ public class ApplicationDbContext : DbContext
             },
             new User
             {
+                Id = UserTwo,
                 FirstName = "Jerzy",
                 LastName = "Lewandowski",
                 Email = "jerzy@example.com",
-                PasswordHash = "passwordToHashInFuture-Jerzy",
+                PasswordHash = userPassHash,
                 Role = RoleNames.UserRole,
                 PhoneNumber = "324934123",
                 Birthday = new DateOnly(1999, 2, 10),
@@ -192,10 +206,11 @@ public class ApplicationDbContext : DbContext
             },
             new User
             {
+                Id = UserThree,
                 FirstName = "Alicja",
                 LastName = "Adamczyk",
                 Email = "alicja@example.com",
-                PasswordHash = "passwordToHashInFuture-Alicja",
+                PasswordHash = userPassHash,
                 Role = RoleNames.UserRole,
                 PhoneNumber = "890123657",
                 Birthday = new DateOnly(1996, 5, 24),
@@ -214,10 +229,11 @@ public class ApplicationDbContext : DbContext
             },
             new User
             {
+                Id = UserFour,
                 FirstName = "Adrian",
                 LastName = "Kisieliński",
                 Email = "adrian@example.com",
-                PasswordHash = "passwordToHashInFuture-Adrian",
+                PasswordHash = adminPassHash,
                 Role = RoleNames.AdminRole,
                 PhoneNumber = "123123123",
                 Birthday = new DateOnly(2002, 10, 6),

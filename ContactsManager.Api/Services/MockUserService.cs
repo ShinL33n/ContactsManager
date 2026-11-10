@@ -247,7 +247,7 @@ public class MockUserService : IUserService
         };
     }
 
-    public async Task<bool> CreateUserAsync(User user)
+    public async Task<bool> CreateUserAsync(User user, string? customSubcategoryName = null)
     {
         if (user != null)
         {
@@ -285,7 +285,7 @@ public class MockUserService : IUserService
         return await Task.FromResult(user);
     }
 
-    public async Task<bool> UpdateUserAsync(User user)
+    public async Task<bool> UpdateUserAsync(User user, string? customSubcategoryName = null)
     {
         User? updatedUser = users.FirstOrDefault(u => u.Id == user.Id);
         if (updatedUser != null)
@@ -300,6 +300,7 @@ public class MockUserService : IUserService
             updatedUser.CategoryId = user.CategoryId;
             updatedUser.SubcategoryId = user.SubcategoryId;
             updatedUser.CustomSubcategoryId = user.CustomSubcategoryId;
+            return await Task.FromResult(true);
         }
         return await Task.FromResult(false);
     }
