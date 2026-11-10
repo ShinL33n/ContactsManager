@@ -16,7 +16,7 @@ public class ContactPublicDTO
 
     public string Email { get; set; } = "";
 
-    public string? PhoneNumber { get; set; } = "";
+    public string? PhoneNumber { get; set; } = null;
 
     public uint? Age { get; set; }
 

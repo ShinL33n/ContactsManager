@@ -42,7 +42,8 @@ public static class ContactMapppings
             Address = user.Address,
             JobTitle = user.JobTitle,
             Education = user.Education?.Name,
-            Notes = user.Notes
+            Notes = user.Notes,
+            Role = user.Role
         };
     }
 }

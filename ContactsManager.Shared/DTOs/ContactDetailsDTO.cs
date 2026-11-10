@@ -1,4 +1,6 @@
-﻿namespace ContactsManager.Shared.DTOs;
+﻿using ContactsManager.Shared.Utils;
+
+namespace ContactsManager.Shared.DTOs;
 
 /// <summary>
 /// DTO used for viewing detailed contact information.
@@ -17,4 +19,6 @@ public class ContactDetailsDTO : ContactPublicDTO
     public string? Education { get; set; } = null;
 
     public string? Notes { get; set; } = null;
+
+    public string Role { get; set; } = RoleNames.UserRole; // Default role is user
 }

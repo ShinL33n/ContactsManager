@@ -20,9 +20,9 @@
                 <div class="avatar" aria-hidden="true">@Contact.FirstName[0]@Contact.LastName[0]</div>
                 <div class="flex-grow-1">
                     <h1 class="h3 fw-bold mb-1">@Contact.FirstName @Contact.LastName</h1>
-                    @if (fullContact?.JobTitle != null)
+                    @if (FullContact?.JobTitle != null)
                     {
-                        <p class="mb-2">@fullContact.JobTitle</p>
+                        <p class="mb-2">@FullContact.JobTitle</p>
                     }
                     <span class="badge category-badge me-1">@Contact.CategoryName</span>
                     @if (Contact.CategoryName == CategoryNames.Business)
@@ -33,7 +33,10 @@
                     {
                         <span class="badge category-badge me-1">@Contact.CustomSubcategoryName</span>
                     }
-                    <span class="badge text-bg-secondary">Placeholder na rolę</span>
+                    @if (FullContact != null)
+                    {
+                        <span class="badge text-bg-secondary"> @FullContact?.Role</span>
+                    }                    
                 </div>
             </div>
         </header>
@@ -57,9 +60,9 @@
                     }
 
                     <dt class="col-sm-4">Adres</dt>
-                    @if (fullContact?.Address != null)
+                    @if (FullContact?.Address != null)
                     {
-                        <dd class="col-sm-8">@fullContact.Address</dd>                        
+                        <dd class="col-sm-8">@FullContact.Address</dd>                        
                     }
                     else
                     {
@@ -72,9 +75,9 @@
                 <h2 class="section-title mb-3">Dane osobowe</h2>
                 <dl class="row mb-0">
                     <dt class="col-sm-4">Data urodzenia</dt>
-                    @if(fullContact?.Birthday != null)
+                    @if(FullContact?.Birthday != null)
                     {
-                        <dd class="col-sm-8">@fullContact.Birthday?.ToString("dd.MM.yyyy")</dd>
+                        <dd class="col-sm-8">@FullContact.Birthday?.ToString("dd.MM.yyyy")</dd>
                     }
                     else
                     {
@@ -82,16 +85,16 @@
                     }
 
                     <dt class="col-sm-4">Wiek</dt>
-                    @if (Contact.Age == null && fullContact?.Birthday != null)
+                    @if (Contact.Age == null && FullContact?.Birthday != null)
 					{
-                        int? age = fullContact.Birthday is DateOnly birthday ? CalculateAge.FromBirthday(birthday) : null;
+                        int? age = FullContact.Birthday is DateOnly birthday ? CalculateAge.FromBirthday(birthday) : null;
                         if (age != null)
                         {
                             <dd class="col-sm-8">@age lat</dd>
                         }
                         
 					}
-                    else if (Contact.Age == null && fullContact?.Birthday == null)
+                    else if (Contact.Age == null && FullContact?.Birthday == null)
                     {
                         <dd class="col-sm-8 text-body-secondary">@NotProvidedChar()</dd>
                     }
@@ -101,9 +104,9 @@
                     }
 
                     <dt class="col-sm-4">Wykształcenie</dt>
-                    @if (fullContact?.Education != null)
+                    @if (FullContact?.Education != null)
                     {
-                        <dd class="col-sm-8">@fullContact.Education</dd>
+                        <dd class="col-sm-8">@FullContact.Education</dd>
                     }
                     else
                     {
@@ -111,9 +114,9 @@
                     }
 
                     <dt class="col-sm-4">Stanowisko</dt>
-					@if (fullContact?.JobTitle != null)
+					@if (FullContact?.JobTitle != null)
 					{
-						<dd class="col-sm-8">@fullContact.JobTitle</dd>
+						<dd class="col-sm-8">@FullContact.JobTitle</dd>
 					}
 					else
 					{
@@ -146,13 +149,13 @@
 
             <section>
                 <h2 class="section-title mb-3">Notatki</h2>
-				@if (fullContact?.Notes == null)
+				@if (FullContact?.Notes == null)
 				{
 					<p class="notes mb-0 text-body-secondary">Brak notatek</p>
 				}
 				else
 				{
-                    <p class="notes mb-0">@fullContact.Notes</p>
+                    <p class="notes mb-0">@FullContact.Notes</p>
 				}
             </section>
         </div>
@@ -189,7 +192,7 @@
     [Parameter]
     public ContactPublicDTO? Contact { get; set; }
 
-    private ContactDetailsDTO? fullContact => Contact as ContactDetailsDTO;
+    private ContactDetailsDTO? FullContact => Contact as ContactDetailsDTO;
 
 
     protected override async Task OnInitializedAsync()

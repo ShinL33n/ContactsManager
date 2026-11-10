@@ -169,7 +169,7 @@ public class MockUserService : IUserService
                 Category = categories.FirstOrDefault(c => c.Id == CategoryPrivate)!,
                 Subcategory = null!,
                 CustomSubcategory = null!,
-                Education = educations.FirstOrDefault(e => e.Id == EducationEngineer)!
+                Education = educations.FirstOrDefault(e => e.Id == EducationEngineer)!,
             },
             new User
             {
